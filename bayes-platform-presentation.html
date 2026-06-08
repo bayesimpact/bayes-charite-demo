@@ -6,1921 +6,505 @@
 <title>The Bayes Platform — Powering AI-first Healthcare</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
   :root {
-    --teal: #82C1CF;
-    --teal-dark: #5fa8b8;
-    --teal-light: #b8dde6;
-    --teal-pale: #e8f5f8;
-    --black: #0a0a0a;
-    --dark: #1a1a1a;
-    --mid: #4a4a4a;
-    --light: #f5f5f5;
-    --white: #ffffff;
-    --border: #e0e0e0;
-    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    --bg:          #F2EFE9;
+    --bg2:         #F7F7F2;
+    --ink:         #000000;
+    --ink-soft:    rgba(0,0,0,0.68);
+    --muted:       #657180;
+    --card:        #FFFFFF;
+    --gold:        #9A6F24;
+    --gold-bg:     #EBE092;
+    --blue:        #1067FE;
+    --blue-soft:   rgba(16,103,254,0.1);
+    --blue-mid:    rgba(16,103,254,0.18);
+    --teal:        #82C1CF;
+    --teal-dark:   #5fa8b8;
+    --teal-pale:   rgba(130,193,207,0.14);
+    --border:      #DBCCAF;
+    --border-light:#EAECF0;
+    --shadow:      0 1px 2px rgba(0,0,0,.04), 0 8px 28px rgba(0,0,0,.07);
+    --shadow-lg:   0 16px 48px rgba(0,0,0,.16);
+    --radius:      14px;
+    --font:        'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono:        'JetBrains Mono', 'SF Mono', monospace;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: var(--font);
-    background: #111;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
+    background: #02040b;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; overflow: hidden;
+  }
+
+  /* ── DECK ── */
+  #deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    transform: translateX(56px);
     overflow: hidden;
   }
+  .slide.active  { opacity: 1; pointer-events: all; transform: translateX(0); }
+  .slide.exit    { opacity: 0; transform: translateX(-56px); }
+
+  .s-light { background: var(--bg); color: var(--ink); }
+  .s-dark  {
+    background: radial-gradient(ellipse 80% 70% at 80% 30%, rgba(16,103,254,.18) 0%, transparent 65%),
+                radial-gradient(ellipse 50% 50% at 20% 80%, rgba(130,193,207,.08) 0%, transparent 55%),
+                #060b18;
+    color: #fff;
+  }
+  .s-cover {
+    background: radial-gradient(58% 70% at 75% 42%, rgba(16,103,254,.28) 0%, transparent 62%),
+                radial-gradient(120% 120% at 72% 30%, #0a1426 0%, #060b18 45%, #02040b 100%);
+    color: #fff;
+  }
+
+  /* ── SLIDE INNER ── */
+  .slide-inner {
+    flex: 1; padding: 56px 88px 88px;
+    display: flex; flex-direction: column;
+    overflow: hidden; position: relative;
+  }
+
+  /* ── BRAND CORNER ── */
+  .brand-corner {
+    display: flex; align-items: center; gap: 9px;
+    margin-bottom: 28px; flex-shrink: 0;
+  }
+  .brand-badge {
+    width: 26px; height: 26px; border-radius: 6px;
+    background: var(--blue); display: flex;
+    align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 900; color: #fff;
+    letter-spacing: -0.05em; flex-shrink: 0;
+  }
+  .s-light .brand-badge { background: var(--blue); }
+  .brand-label {
+    font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .s-light .brand-label { color: var(--muted); }
+  .s-dark  .brand-label, .s-cover .brand-label { color: rgba(255,255,255,0.4); }
+
+  /* ── TYPOGRAPHY ── */
+  .eyebrow {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .s-light .eyebrow { color: var(--blue); }
+  .s-dark  .eyebrow, .s-cover .eyebrow { color: var(--teal); }
+
+  h1.big {
+    font-size: clamp(34px,4.5vw,60px);
+    font-weight: 800; line-height: 1.1;
+    letter-spacing: -0.022em;
+  }
+  h2.title {
+    font-size: clamp(24px,2.8vw,38px);
+    font-weight: 800; line-height: 1.15;
+    letter-spacing: -0.016em;
+  }
+  .lead {
+    font-size: clamp(15px,1.5vw,19px);
+    line-height: 1.65;
+  }
+  .s-light .lead { color: var(--ink-soft); }
+  .s-dark  .lead, .s-cover .lead { color: rgba(255,255,255,0.55); }
+
+  em.hl {
+    font-style: normal;
+    background: linear-gradient(180deg, transparent 60%, var(--gold-bg) 60%);
+  }
+  .s-dark em.hl, .s-cover em.hl {
+    background: linear-gradient(180deg, transparent 60%, rgba(130,193,207,0.35) 60%);
+  }
+
+  .divider { width: 44px; height: 3px; border-radius: 2px; margin: 14px 0 20px; }
+  .s-light .divider { background: var(--blue); }
+  .s-dark  .divider, .s-cover .divider { background: var(--teal); }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 22px;
+    box-shadow: var(--shadow);
+  }
+  .card-dark {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: var(--radius); padding: 22px;
+  }
+  .card-blue {
+    background: var(--blue-soft); border: 1px solid rgba(16,103,254,0.25);
+    border-radius: var(--radius); padding: 22px;
+    box-shadow: var(--shadow);
+  }
+  .card-teal {
+    background: var(--teal-pale); border: 1px solid rgba(130,193,207,0.28);
+    border-radius: var(--radius); padding: 22px;
+  }
+
+  /* ── PILLS ── */
+  .pill {
+    display: inline-block; padding: 6px 14px;
+    border-radius: 999px; font-size: 11px;
+    font-weight: 600; letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .pill-blue { background: var(--blue-soft); color: var(--blue); border: 1px solid rgba(16,103,254,0.25); }
+  .pill-teal { background: var(--teal-pale); color: var(--teal-dark); border: 1px solid rgba(130,193,207,0.3); }
+  .pill-ghost { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.12); }
+  .pill-gold  { background: rgba(154,111,36,0.1); color: var(--gold); border: 1px solid rgba(154,111,36,0.25); }
+
+  /* ── CARD ICON ── */
+  .card-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+    background: var(--blue-soft);
+  }
+  .s-dark .card-icon, .card-icon-dark { background: rgba(130,193,207,0.12); }
 
   /* ── NAV ── */
   #nav {
-    position: fixed;
-    bottom: 28px;
-    left: 50%;
+    position: fixed; bottom: 24px; left: 50%;
     transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: rgba(10,10,10,0.85);
-    border: 1px solid rgba(130,193,207,0.25);
-    padding: 10px 20px;
-    border-radius: 40px;
-    backdrop-filter: blur(12px);
-    z-index: 1000;
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(2,4,11,0.82);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 10px 20px; border-radius: 40px;
+    backdrop-filter: blur(14px); z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
   }
   #nav button {
-    background: none;
-    border: none;
-    color: var(--teal);
-    cursor: pointer;
-    font-size: 18px;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: background 0.2s;
+    background: none; border: none; color: var(--teal);
+    cursor: pointer; font-size: 17px; padding: 4px 8px;
+    border-radius: 6px; transition: background 0.2s;
   }
-  #nav button:hover { background: rgba(130,193,207,0.15); }
-  #nav button:disabled { color: #444; cursor: default; }
-  #slide-counter {
-    color: #888;
-    font-size: 12px;
-    font-weight: 500;
-    min-width: 60px;
-    text-align: center;
-    letter-spacing: 0.05em;
-  }
-  #dots {
-    display: flex;
-    gap: 5px;
-  }
-  .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #444;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-  }
-  .dot.active { background: var(--teal); transform: scale(1.3); }
+  #nav button:hover { background: rgba(130,193,207,0.12); }
+  #nav button:disabled { color: #333; cursor: default; }
+  #slide-counter { color: #666; font-size: 12px; font-weight: 600; min-width: 54px; text-align: center; letter-spacing: 0.05em; }
+  #dots { display: flex; gap: 5px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #333; cursor: pointer; transition: background 0.2s, transform 0.2s; }
+  .dot.active { background: var(--teal); transform: scale(1.35); }
 
-  /* ── SLIDE WRAPPER ── */
-  #deck {
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-    overflow: hidden;
-  }
+  #keyboard-hint { position: fixed; top: 18px; right: 22px; font-size: 10px; color: rgba(255,255,255,0.18); display: flex; gap: 8px; align-items: center; pointer-events: none; }
+  .kbd { padding: 2px 7px; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; font-family: var(--mono); }
 
-  .slide {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.45s ease, transform 0.45s ease;
-    transform: translateX(60px);
-    overflow: hidden;
-  }
-  .slide.active {
-    opacity: 1;
-    pointer-events: all;
-    transform: translateX(0);
-  }
-  .slide.exit {
-    opacity: 0;
-    transform: translateX(-60px);
-  }
+  /* ══════════════════════════════════════
+     SLIDE-SPECIFIC STYLES
+  ══════════════════════════════════════ */
 
-  /* ── SHARED SLIDE LAYOUT ── */
-  .slide-inner {
-    flex: 1;
-    padding: 52px 72px 80px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .slide-tag {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--teal);
-    margin-bottom: 16px;
-  }
-
-  h1.slide-title {
-    font-size: clamp(28px, 3.5vw, 48px);
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-  }
-
-  h2.slide-title {
-    font-size: clamp(22px, 2.8vw, 36px);
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -0.015em;
-  }
-
-  .slide-subtitle {
-    font-size: clamp(13px, 1.4vw, 17px);
-    line-height: 1.6;
-    color: var(--mid);
-    margin-top: 10px;
-  }
-
-  .divider {
-    width: 48px;
-    height: 3px;
-    background: var(--teal);
-    margin: 20px 0;
-    border-radius: 2px;
-  }
-
-  /* ═══════════════════════════════
-     SLIDE 1 — COVER
-  ═══════════════════════════════ */
-  #slide-1 {
-    background: var(--black);
-    color: var(--white);
-  }
-  #slide-1 .cover-bg {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 70% 60% at 80% 50%, rgba(130,193,207,0.12) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(130,193,207,0.06) 0%, transparent 60%);
+  /* S1 cover decorations */
+  .cover-ring {
+    position: absolute; right: 6%; top: 50%; transform: translateY(-50%);
+    width: clamp(200px,26vw,360px); height: clamp(200px,26vw,360px);
+    border: 1px solid rgba(130,193,207,0.1); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
     pointer-events: none;
   }
-  #slide-1 .cover-grid {
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(130,193,207,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(130,193,207,0.04) 1px, transparent 1px);
-    background-size: 48px 48px;
-    pointer-events: none;
-  }
-  #slide-1 .slide-inner {
-    position: relative;
-    justify-content: center;
-    padding-bottom: 100px;
-  }
-  #slide-1 .logo-lockup {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 48px;
-  }
-  #slide-1 .logo-badge {
-    width: 42px;
-    height: 42px;
-    background: var(--teal);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: 900;
-    color: var(--black);
-    letter-spacing: -0.05em;
-  }
-  #slide-1 .logo-text {
-    font-size: 14px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.6);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-  #slide-1 h1.slide-title {
-    font-size: clamp(34px, 4.5vw, 62px);
-    color: var(--white);
-    max-width: 720px;
-  }
-  #slide-1 h1.slide-title span { color: var(--teal); }
-  #slide-1 .slide-subtitle {
-    color: rgba(255,255,255,0.55);
-    max-width: 560px;
-    font-size: clamp(14px, 1.5vw, 19px);
-    margin-top: 16px;
-  }
-  #slide-1 .cover-pills {
-    display: flex;
-    gap: 10px;
-    margin-top: 40px;
-    flex-wrap: wrap;
-  }
-  .pill {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-  .pill-teal {
-    background: rgba(130,193,207,0.15);
-    color: var(--teal);
-    border: 1px solid rgba(130,193,207,0.3);
-  }
-  .pill-white {
-    background: rgba(255,255,255,0.07);
-    color: rgba(255,255,255,0.6);
-    border: 1px solid rgba(255,255,255,0.12);
-  }
-  #slide-1 .cover-decoration {
-    position: absolute;
-    right: 8%;
-    top: 50%;
-    transform: translateY(-50%);
-    width: clamp(200px, 28vw, 380px);
-    height: clamp(200px, 28vw, 380px);
-    border: 1px solid rgba(130,193,207,0.12);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  #slide-1 .cover-decoration::before {
-    content: '';
-    position: absolute;
-    width: 72%;
-    height: 72%;
-    border: 1px solid rgba(130,193,207,0.18);
-    border-radius: 50%;
-  }
-  #slide-1 .cover-decoration::after {
-    content: '';
-    position: absolute;
-    width: 44%;
-    height: 44%;
-    background: rgba(130,193,207,0.08);
-    border-radius: 50%;
-  }
-  .cover-inner-icon {
-    position: relative;
-    z-index: 1;
-    font-size: clamp(36px, 5vw, 60px);
-  }
+  .cover-ring::before { content:''; position:absolute; width:70%; height:70%; border:1px solid rgba(130,193,207,0.15); border-radius:50%; }
+  .cover-ring::after  { content:''; position:absolute; width:42%; height:42%; background:rgba(16,103,254,0.08); border-radius:50%; }
 
-  /* ═══════════════════════════════
-     SLIDE 2 — PROBLEM
-  ═══════════════════════════════ */
-  #slide-2 {
-    background: var(--white);
-    color: var(--black);
-  }
-  #slide-2 .two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-top: 32px;
-    flex: 1;
-  }
-  .problem-card {
-    border-radius: 16px;
-    padding: 36px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  .problem-card.today {
-    background: #f7f7f7;
-    border: 1px solid var(--border);
-  }
-  .problem-card.solution {
-    background: var(--black);
-    color: var(--white);
-  }
-  .problem-card .card-tag {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-  }
-  .problem-card.today .card-tag { color: #999; }
-  .problem-card.solution .card-tag { color: var(--teal); }
-  .problem-card h3 {
-    font-size: clamp(18px, 2vw, 26px);
-    font-weight: 700;
-    line-height: 1.2;
-  }
-  .problem-card.today h3 { color: var(--black); }
-  .problem-card.solution h3 { color: var(--white); }
-  .problem-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .problem-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: clamp(12px, 1.2vw, 14px);
-    line-height: 1.5;
-  }
-  .problem-card.today .problem-list li { color: var(--mid); }
-  .problem-card.solution .problem-list li { color: rgba(255,255,255,0.75); }
-  .problem-list li::before {
-    content: '';
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-top: 1px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='9' fill='%23fee2e2' stroke='%23fca5a5' stroke-width='1'/%3E%3Cpath d='M6 10l3 3 5-5' stroke='%23ef4444' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-size: cover;
-  }
-  .problem-card.solution .problem-list li::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='9' fill='rgba(130,193,207,0.2)' stroke='%2382C1CF' stroke-width='1'/%3E%3Cpath d='M6 10l3 3 5-5' stroke='%2382C1CF' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  }
+  /* S2 problem */
+  .prob-col-today { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; display:flex; flex-direction:column; gap:18px; }
+  .prob-col-bayes { background: var(--ink); border-radius: var(--radius); padding: 32px; display:flex; flex-direction:column; gap:18px; color:#fff; }
+  .prob-col-label { font-size: 10px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; }
+  .prob-col-today .prob-col-label { color: var(--muted); }
+  .prob-col-bayes .prob-col-label { color: var(--teal); }
+  .prob-list { list-style:none; display:flex; flex-direction:column; gap:11px; }
+  .prob-list li { display:flex; align-items:flex-start; gap:10px; font-size: clamp(13px,1.2vw,15px); line-height:1.55; }
+  .prob-col-today .prob-list li { color: var(--ink-soft); }
+  .prob-col-bayes .prob-list li { color: rgba(255,255,255,0.72); }
+  .prob-icon-x  { width:18px; height:18px; border-radius:50%; background:#fee2e2; display:inline-flex; align-items:center; justify-content:center; font-size:9px; color:#ef4444; flex-shrink:0; margin-top:2px; }
+  .prob-icon-ok { width:18px; height:18px; border-radius:50%; background:rgba(130,193,207,0.2); display:inline-flex; align-items:center; justify-content:center; font-size:9px; color:var(--teal); flex-shrink:0; margin-top:2px; }
 
-  /* ═══════════════════════════════
-     SLIDE 3 — LIFECYCLE
-  ═══════════════════════════════ */
-  #slide-3 {
-    background: var(--black);
-    color: var(--white);
-  }
-  #slide-3 .lifecycle-flow {
-    display: flex;
-    align-items: stretch;
-    gap: 0;
-    margin-top: 20px;
-    flex-shrink: 0;
-  }
-  .lifecycle-step {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 32px 20px;
-    border-radius: 14px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.07);
-    position: relative;
-    transition: background 0.3s;
-  }
-  .lifecycle-step:hover {
-    background: rgba(130,193,207,0.07);
-    border-color: rgba(130,193,207,0.2);
-  }
-  .lifecycle-arrow {
-    display: flex;
-    align-items: center;
-    padding: 0 8px;
-    color: rgba(130,193,207,0.4);
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-  .lifecycle-step .step-num {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    color: var(--teal);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-  .lifecycle-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
-    background: rgba(130,193,207,0.12);
-    border: 1px solid rgba(130,193,207,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    margin-bottom: 16px;
-  }
-  .lifecycle-step h4 {
-    font-size: clamp(11px, 1.1vw, 13px);
-    font-weight: 700;
-    line-height: 1.3;
-    color: var(--white);
-    margin-bottom: 8px;
-  }
-  .lifecycle-step p {
-    font-size: clamp(10px, 0.95vw, 12px);
-    line-height: 1.5;
-    color: rgba(255,255,255,0.45);
-  }
+  /* S3 lifecycle */
+  .lc-col { display:flex; flex-direction:column; gap:10px; min-height:0; }
+  .lc-header { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.09); border-radius:var(--radius); padding:16px; flex-shrink:0; }
+  .lc-step-num { font-size:10px; font-weight:700; color:var(--teal); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:8px; }
+  .lc-icon { font-size:26px; margin-bottom:9px; }
+  .lc-title { font-size:15px; font-weight:800; color:#fff; margin-bottom:5px; }
+  .lc-desc { font-size:13px; color:rgba(255,255,255,0.5); line-height:1.55; }
+  .lc-panel { background:#0d1117; border:1px solid rgba(130,193,207,0.15); border-radius:var(--radius); flex:1; display:flex; flex-direction:column; overflow:hidden; min-height:0; }
+  .lc-panel-bar { padding:6px 12px; background:rgba(0,0,0,0.4); border-bottom:1px solid rgba(255,255,255,0.07); display:flex; align-items:center; gap:6px; flex-shrink:0; }
+  .lc-dot { width:7px; height:7px; border-radius:50%; display:inline-block; }
+  .lc-panel-title { font-size:8.5px; color:rgba(255,255,255,0.28); font-family:var(--mono); margin-left:6px; }
+  .lc-panel-body { padding:12px; flex:1; display:flex; flex-direction:column; gap:8px; overflow:hidden; }
 
-  /* ═══════════════════════════════
-     SLIDE 4 — DEMO MOCKUP
-  ═══════════════════════════════ */
-  #slide-4 {
-    background: #0d1117;
-    color: var(--white);
-  }
-  #slide-4 .demo-panels {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
-    flex: 1;
-    margin-top: 28px;
-    min-height: 0;
-  }
-  .demo-panel {
-    background: var(--white);
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  }
-  .demo-panel-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #fafafa;
-  }
-  .demo-panel-header .dots-row {
-    display: flex;
-    gap: 5px;
-  }
-  .demo-panel-header .dots-row span {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: #ddd;
-  }
-  .demo-panel-header .dots-row span:nth-child(1) { background: #ff6b6b; }
-  .demo-panel-header .dots-row span:nth-child(2) { background: #ffd93d; }
-  .demo-panel-header .dots-row span:nth-child(3) { background: #6bcb77; }
-  .demo-panel-title {
-    font-size: 11px;
-    font-weight: 600;
-    color: #999;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin-left: 4px;
-  }
-  .demo-panel-body {
-    padding: 16px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow: hidden;
-  }
+  /* S4 comparison */
+  .cmp-btn { padding:9px 18px; border-radius:999px; font-size:11px; font-weight:700; cursor:pointer; border:1.5px solid rgba(130,193,207,0.4); background:rgba(130,193,207,0.1); color:var(--teal); font-family:var(--font); transition:all .2s; white-space:nowrap; }
+  .cmp-btn:hover { background:rgba(130,193,207,0.22); border-color:var(--teal); }
+  .cmp-btn.active { background:var(--teal); color:#060b18; border-color:var(--teal); font-weight:800; }
+  .cmp-panel-header { padding:9px 16px; display:flex; align-items:center; gap:8px; border-radius:var(--radius) var(--radius) 0 0; flex-shrink:0; }
+  .cmp-panel-left  { background:#1a1a1a; border:1px solid rgba(255,255,255,0.09); }
+  .cmp-panel-right { background:#0a1428; border:1px solid rgba(16,103,254,0.3); }
+  .cmp-panel-body  { flex:1; overflow:hidden; display:flex; flex-direction:column; border-radius:0 0 var(--radius) var(--radius); }
+  .cmp-panel-left-body  { background:#111; border:1px solid rgba(255,255,255,0.07); border-top:none; }
+  .cmp-panel-right-body { background:#060e1e; border:1px solid rgba(16,103,254,0.2); border-top:none; }
+  .cmp-msgs { flex:1; padding:14px; display:flex; flex-direction:column; gap:8px; overflow-y:auto; }
+  .cmp-msg-user   { align-self:flex-end; background:rgba(130,193,207,0.22); color:var(--teal); padding:8px 12px; border-radius:10px 10px 2px 10px; font-size:11px; font-weight:600; max-width:88%; line-height:1.4; }
+  .cmp-msg-generic{ align-self:flex-start; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.68); padding:10px 12px; border-radius:2px 10px 10px 10px; font-size:11px; line-height:1.6; max-width:96%; border-left:3px solid rgba(239,68,68,0.5); }
+  .cmp-msg-bayes  { align-self:flex-start; background:rgba(16,103,254,0.1); color:rgba(255,255,255,0.85); padding:10px 12px; border-radius:2px 10px 10px 10px; font-size:11px; line-height:1.6; max-width:96%; border-left:3px solid var(--blue); }
+  .cmp-thinking   { align-self:flex-start; display:flex; align-items:center; gap:8px; font-size:10px; font-style:italic; }
+  .cmp-rag-trace  { background:rgba(130,193,207,0.06); border:1px solid rgba(130,193,207,0.15); border-radius:8px; padding:8px 10px; font-size:9px; color:rgba(130,193,207,0.75); line-height:1.6; font-family:var(--mono); max-width:96%; align-self:flex-start; }
+  .cmp-issues     { display:flex; flex-wrap:wrap; gap:4px; max-width:96%; align-self:flex-start; }
+  .cmp-issue-tag  { font-size:9px; padding:2px 7px; border-radius:5px; background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.2); font-weight:600; }
+  .cmp-sources    { display:flex; flex-wrap:wrap; gap:5px; max-width:96%; align-self:flex-start; align-items:center; }
+  .cmp-source-chip{ font-size:9px; padding:3px 9px; border-radius:6px; background:rgba(16,103,254,0.12); color:#6ba3ff; border:1px solid rgba(16,103,254,0.25); font-weight:600; cursor:pointer; transition:background .15s; display:flex; align-items:center; gap:4px; }
+  .cmp-source-chip:hover { background:rgba(16,103,254,0.22); }
+  .cmp-escalation { font-size:9px; padding:4px 8px; border-radius:6px; background:rgba(251,191,36,0.08); color:#fbbf24; border:1px solid rgba(251,191,36,0.2); max-width:96%; align-self:flex-start; margin-top:2px; font-style:italic; }
+  .cmp-quality    { display:flex; flex-wrap:wrap; gap:4px; max-width:96%; align-self:flex-start; }
+  .cmp-quality-tag{ font-size:9px; padding:2px 7px; border-radius:5px; background:rgba(16,103,254,0.1); color:#6ba3ff; border:1px solid rgba(16,103,254,0.2); font-weight:600; }
 
-  /* Panel 1 — document import */
-  .upload-zone {
-    border: 2px dashed var(--teal-light);
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
-    background: var(--teal-pale);
-  }
-  .upload-zone .upload-icon { font-size: 28px; margin-bottom: 8px; }
-  .upload-zone p { font-size: 11px; color: var(--teal-dark); font-weight: 500; }
-  .doc-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 10px;
-    background: #f7f9fa;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-  }
-  .doc-item .doc-icon { font-size: 14px; }
-  .doc-item .doc-name { font-size: 11px; font-weight: 500; color: var(--dark); flex: 1; }
-  .doc-item .doc-size { font-size: 10px; color: #aaa; }
-  .doc-item .doc-status {
-    font-size: 10px;
-    padding: 2px 7px;
-    border-radius: 10px;
-    font-weight: 600;
-  }
-  .doc-status.ready { background: #dcfce7; color: #16a34a; }
-  .doc-status.processing { background: #fef9c3; color: #a16207; }
+  /* S5 tech specs */
+  .spec-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; flex:1; margin-top:4px; }
+  .spec-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:22px; display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow); transition:border-color .2s, box-shadow .2s; }
+  .spec-card:hover { border-color:var(--blue); box-shadow:0 0 0 3px rgba(16,103,254,0.1); }
+  .spec-icon { width:42px; height:42px; border-radius:10px; background:var(--blue-soft); display:flex; align-items:center; justify-content:center; font-size:20px; }
+  .spec-card h4 { font-size:15px; font-weight:800; color:var(--ink); line-height:1.25; padding-bottom:8px; border-bottom:2px solid var(--blue-soft); }
+  .spec-card p  { font-size:13px; color:var(--ink-soft); line-height:1.6; }
 
-  /* Panel 2 — system prompt */
-  .prompt-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #999;
-  }
-  .prompt-textarea {
-    background: #f8f9fa;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
-    font-size: 11px;
-    font-family: var(--font);
-    color: var(--dark);
-    line-height: 1.6;
-    flex: 1;
-    resize: none;
-  }
-  .prompt-tag-row {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-  .ptag {
-    font-size: 10px;
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-weight: 600;
-  }
-  .ptag-blue { background: #dbeafe; color: #1d4ed8; }
-  .ptag-green { background: #dcfce7; color: #15803d; }
-  .ptag-orange { background: #ffedd5; color: #c2410c; }
+  /* S6 use cases */
+  .uc-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; flex:1; margin-top:4px; }
+  .uc-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius); padding:22px; display:flex; flex-direction:column; gap:10px; transition:background .2s, border-color .2s; }
+  .uc-card:hover { background:rgba(16,103,254,0.08); border-color:rgba(16,103,254,0.3); }
+  .uc-num  { font-size:10px; font-weight:700; color:var(--teal); letter-spacing:0.15em; text-transform:uppercase; }
+  .uc-icon { width:38px; height:38px; border-radius:10px; background:rgba(130,193,207,0.12); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .uc-type { font-size:10px; font-weight:600; color:var(--teal); letter-spacing:0.04em; }
+  .uc-card h4 { font-size:clamp(13px,1.2vw,15px); font-weight:700; color:#fff; line-height:1.3; }
+  .uc-example { font-size:clamp(10px,0.95vw,12px); color:rgba(255,255,255,0.42); line-height:1.5; padding-top:8px; border-top:1px solid rgba(255,255,255,0.07); }
+  .uc-example span { color:rgba(255,255,255,0.68); font-style:italic; }
 
-  /* Panel 3 — chat */
-  .chat-messages {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    overflow: hidden;
-  }
-  .chat-msg {
-    max-width: 85%;
-    padding: 9px 12px;
-    border-radius: 10px;
-    font-size: 11px;
-    line-height: 1.5;
-  }
-  .chat-msg.user {
-    background: var(--teal);
-    color: var(--black);
-    align-self: flex-end;
-    border-bottom-right-radius: 3px;
-    font-weight: 500;
-  }
-  .chat-msg.agent {
-    background: #f0f0f0;
-    color: var(--dark);
-    align-self: flex-start;
-    border-bottom-left-radius: 3px;
-  }
-  .chat-msg.agent strong { color: var(--teal-dark); }
-  .chat-input-row {
-    display: flex;
-    gap: 6px;
-    padding-top: 6px;
-    border-top: 1px solid var(--border);
-  }
-  .chat-input {
-    flex: 1;
-    padding: 7px 10px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    font-size: 11px;
-    background: #fafafa;
-    color: var(--dark);
-  }
-  .chat-send {
-    width: 30px;
-    height: 30px;
-    background: var(--teal);
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    flex-shrink: 0;
-  }
+  /* S7 architecture */
+  .arch-diagram { display:flex; align-items:center; justify-content:space-between; margin-top:20px; flex:1.8; min-height:0; }
+  .arch-group { display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .arch-device { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:10px 14px; font-size:13px; font-weight:500; color:rgba(255,255,255,0.8); display:flex; align-items:center; gap:8px; white-space:nowrap; }
+  .arch-device .dev-icon { font-size:20px; }
+  .arch-box { background:rgba(130,193,207,0.08); border:1px solid rgba(130,193,207,0.25); border-radius:16px; padding:20px 22px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .arch-box.highlight { background:rgba(16,103,254,0.14); border-color:rgba(16,103,254,0.45); box-shadow:0 0 28px rgba(16,103,254,0.15); }
+  .arch-box-icon { font-size:28px; }
+  .arch-box h4 { font-size:clamp(13px,1.2vw,15px); font-weight:800; color:#fff; line-height:1.3; }
+  .arch-box p  { font-size:clamp(11px,1vw,12px); color:rgba(255,255,255,0.5); line-height:1.5; }
+  .arch-arrow  { display:flex; flex-direction:column; align-items:center; gap:4px; padding:0 8px; flex-shrink:0; }
+  .arch-arrow span  { font-size:22px; color:rgba(130,193,207,0.55); }
+  .arch-arrow small { font-size:10px; color:rgba(255,255,255,0.28); text-align:center; max-width:80px; line-height:1.4; }
+  .pipeline-steps { display:flex; margin-top:16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:12px; overflow:hidden; flex-shrink:0; }
+  .pip-step { flex:1; padding:12px; display:flex; flex-direction:column; gap:4px; border-right:1px solid rgba(255,255,255,0.06); position:relative; }
+  .pip-step:last-child { border-right:none; }
+  .pip-step::after { content:'→'; position:absolute; right:-10px; top:50%; transform:translateY(-50%); color:rgba(130,193,207,0.3); font-size:14px; z-index:1; }
+  .pip-step:last-child::after { display:none; }
+  .pip-num   { font-size:9px; font-weight:700; color:var(--teal); letter-spacing:0.1em; }
+  .pip-label { font-size:clamp(11px,1vw,13px); font-weight:700; color:#fff; line-height:1.3; }
+  .pip-desc  { font-size:clamp(10px,0.9vw,11px); color:rgba(255,255,255,0.4); line-height:1.4; }
+  .tech-badges { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; align-items:center; flex-shrink:0; }
+  .tech-badge { padding:4px 10px; border-radius:6px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); font-size:10px; font-weight:600; color:rgba(255,255,255,0.5); letter-spacing:.05em; }
+  .tech-badge.accent { border-color:rgba(130,193,207,0.3); color:var(--teal); background:rgba(130,193,207,0.07); }
 
-  /* ═══════════════════════════════
-     SLIDE 5 — TECH SPECS
-  ═══════════════════════════════ */
-  #slide-5 {
-    background: var(--white);
-    color: var(--black);
-  }
-  .specs-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-    margin-top: 28px;
-    flex: 1;
-  }
-  .spec-card {
-    background: var(--light);
-    border-radius: 12px;
-    padding: 20px;
-    border: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    transition: box-shadow 0.2s, border-color 0.2s;
-  }
-  .spec-card:hover {
-    border-color: var(--teal);
-    box-shadow: 0 0 0 3px rgba(130,193,207,0.1);
-  }
-  .spec-icon {
-    font-size: 22px;
-    width: 40px;
-    height: 40px;
-    background: rgba(130,193,207,0.12);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .spec-card h4 {
-    font-size: clamp(13px, 1.2vw, 16px);
-    font-weight: 800;
-    color: var(--black);
-    line-height: 1.25;
-    padding-bottom: 8px;
-    border-bottom: 2px solid rgba(130,193,207,0.3);
-    margin-bottom: 2px;
-  }
-  .spec-card p {
-    font-size: clamp(11px, 1vw, 13px);
-    color: var(--mid);
-    line-height: 1.6;
-  }
-  .spec-icon {
-    font-size: 26px;
-    width: 46px;
-    height: 46px;
-  }
+  /* S8 live demo */
+  .demo-tabs { display:flex; gap:8px; margin-bottom:12px; flex-shrink:0; }
+  .demo-tab { padding:7px 16px; border-radius:999px; font-size:11px; font-weight:600; cursor:pointer; border:1.5px solid rgba(130,193,207,0.28); background:transparent; color:rgba(255,255,255,0.4); transition:all .2s; font-family:var(--font); }
+  .demo-tab.active { background:rgba(130,193,207,0.15); color:var(--teal); border-color:rgba(130,193,207,0.5); }
+  .live-chat { background:#161b22; border:1px solid rgba(130,193,207,0.15); border-radius:var(--radius); display:flex; flex-direction:column; overflow:hidden; }
+  .live-chat-header { padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.07); display:flex; align-items:center; gap:10px; }
+  .agent-dot { width:8px; height:8px; background:#3fb950; border-radius:50%; box-shadow:0 0 6px #3fb950; }
+  .live-chat-header span { font-size:12px; font-weight:600; color:rgba(255,255,255,0.8); }
+  .live-chat-header small { font-size:10px; color:rgba(255,255,255,0.32); margin-left:auto; }
+  .live-messages { flex:1; padding:14px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; min-height:0; }
+  .live-msg { padding:9px 12px; border-radius:10px; font-size:11px; line-height:1.55; max-width:90%; }
+  .live-msg.user  { background:rgba(130,193,207,0.22); color:var(--teal); align-self:flex-end; border-bottom-right-radius:3px; font-weight:600; }
+  .live-msg.agent { background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.85); align-self:flex-start; border-bottom-left-radius:3px; }
+  .live-msg.thinking { background:rgba(130,193,207,0.07); color:var(--teal); border:1px dashed rgba(130,193,207,0.3); display:flex; align-items:center; gap:8px; }
+  .example-btns { padding:10px 14px; display:flex; flex-direction:column; gap:5px; border-top:1px solid rgba(255,255,255,0.07); }
+  .example-btn { padding:7px 12px; background:rgba(130,193,207,0.07); border:1px solid rgba(130,193,207,0.2); border-radius:8px; color:var(--teal); font-size:10px; font-weight:500; cursor:pointer; text-align:left; transition:background .2s; font-family:var(--font); line-height:1.4; }
+  .example-btn:hover { background:rgba(130,193,207,0.14); border-color:rgba(130,193,207,0.4); }
+  .live-input-row { padding:10px 14px; display:flex; gap:8px; border-top:1px solid rgba(255,255,255,0.07); }
+  .live-input { flex:1; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:20px; color:#fff; font-size:11px; font-family:var(--font); outline:none; }
+  .live-input:focus { border-color:rgba(130,193,207,0.4); }
+  .live-input::placeholder { color:rgba(255,255,255,0.25); }
+  .live-send { width:32px; height:32px; background:var(--teal); border:none; border-radius:50%; cursor:pointer; color:#060b18; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .2s; }
+  .live-send:hover { background:var(--teal-dark); }
+  .live-response { display:flex; flex-direction:column; gap:10px; overflow-y:auto; min-height:0; }
+  .resp-panel { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:14px 16px; opacity:0; transform:translateY(10px); transition:opacity .3s ease, transform .3s ease; }
+  .resp-panel.visible { opacity:1; transform:translateY(0); }
+  .resp-panel-label { font-size:9px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--teal); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+  .chart-wrap { position:relative; height:160px; }
+  .chart-summary { font-size:11px; color:rgba(255,255,255,0.6); line-height:1.5; margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.07); }
+  .chart-summary strong { color:var(--teal); }
+  .metric-card { background:rgba(130,193,207,0.07); border:1px solid rgba(130,193,207,0.18); border-radius:10px; padding:16px; display:flex; align-items:flex-start; gap:14px; }
+  .metric-value { font-size:clamp(22px,2.5vw,32px); font-weight:900; color:var(--teal); line-height:1; }
+  .metric-unit  { font-size:13px; color:rgba(255,255,255,0.45); font-weight:500; }
+  .metric-label { font-size:12px; color:rgba(255,255,255,0.55); margin-top:4px; }
+  .metric-range { font-size:10px; color:rgba(130,193,207,0.6); margin-top:6px; }
+  .reasoning-toggle { font-size:10px; color:rgba(255,255,255,0.38); cursor:pointer; display:flex; align-items:center; gap:5px; margin-top:4px; transition:color .2s; }
+  .reasoning-toggle:hover { color:var(--teal); }
+  .reasoning-body { display:none; margin-top:8px; padding:10px 12px; background:rgba(0,0,0,0.2); border-radius:8px; font-size:10px; color:rgba(255,255,255,0.48); line-height:1.6; }
+  .reasoning-body.open { display:block; }
+  #slide-8 .key-msg { margin-top:12px; padding:10px 16px; background:rgba(130,193,207,0.07); border-left:3px solid var(--teal); border-radius:0 8px 8px 0; font-size:11px; color:rgba(255,255,255,0.58); font-style:italic; line-height:1.5; flex-shrink:0; }
 
-  /* ═══════════════════════════════
-     SLIDE 6 — USE CASES
-  ═══════════════════════════════ */
-  #slide-6 {
-    background: var(--black);
-    color: var(--white);
-  }
-  .usecases-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin-top: 28px;
-    flex: 1;
-  }
-  .usecase-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-    padding: 22px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    transition: background 0.2s, border-color 0.2s;
-  }
-  .usecase-card:hover {
-    background: rgba(130,193,207,0.07);
-    border-color: rgba(130,193,207,0.25);
-  }
-  .uc-num {
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--teal);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-  }
-  .uc-icon-label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .uc-icon {
-    font-size: 20px;
-    width: 38px;
-    height: 38px;
-    background: rgba(130,193,207,0.1);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .usecase-card h4 {
-    font-size: clamp(12px, 1.1vw, 14px);
-    font-weight: 700;
-    color: var(--white);
-    line-height: 1.3;
-  }
-  .uc-type {
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--teal);
-    letter-spacing: 0.05em;
-  }
-  .uc-example {
-    font-size: clamp(10px, 0.95vw, 12px);
-    color: rgba(255,255,255,0.45);
-    line-height: 1.5;
-    padding-top: 4px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-  }
-  .uc-example span {
-    color: rgba(255,255,255,0.7);
-    font-style: italic;
-  }
+  /* S9 project org */
+  #slide-9 { background: var(--bg); color: var(--ink); }
 
-  /* ═══════════════════════════════
-     SLIDE 7 — MATURITY SCALE
-  ═══════════════════════════════ */
-  #slide-7 {
-    background: #f8fafb;
-    color: var(--black);
-  }
-  .maturity-track {
-    margin-top: 36px;
-    position: relative;
-  }
-  .maturity-line {
-    height: 3px;
-    background: linear-gradient(90deg, var(--teal-light), var(--teal), var(--teal-dark));
-    border-radius: 2px;
-    margin: 0 40px;
-    position: relative;
-    margin-bottom: 0;
-  }
-  .maturity-steps {
-    display: flex;
-    justify-content: space-between;
-    position: relative;
-    padding-top: 0;
-  }
-  .mat-step {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-  }
-  .mat-step .mat-node {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 3px solid var(--teal);
-    background: var(--white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 800;
-    color: var(--teal-dark);
-    position: relative;
-    top: -19px;
-    margin-bottom: 0;
-    transition: background 0.3s;
-    z-index: 2;
-  }
-  .mat-step:hover .mat-node {
-    background: var(--teal);
-    color: var(--white);
-  }
-  .mat-card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    width: 90%;
-    text-align: center;
-    margin-top: 8px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    cursor: default;
-  }
-  .mat-step:hover .mat-card {
-    border-color: var(--teal);
-    box-shadow: 0 0 0 3px rgba(130,193,207,0.1);
-  }
-  .mat-card h4 {
-    font-size: clamp(12px, 1.2vw, 14px);
-    font-weight: 700;
-    color: var(--black);
-    margin-bottom: 6px;
-  }
-  .mat-card p {
-    font-size: clamp(10px, 0.95vw, 12px);
-    color: var(--mid);
-    line-height: 1.5;
-  }
-  .mat-tag {
-    display: inline-block;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    border-radius: 6px;
-    margin-top: 8px;
-  }
-  .mat-tag-grey { background: #f0f0f0; color: #888; }
-  .mat-tag-teal { background: rgba(130,193,207,0.15); color: var(--teal-dark); }
-  .mat-tag-dark { background: var(--black); color: var(--teal); }
-  #slide-7 .platform-note {
-    margin-top: 32px;
-    padding: 16px 24px;
-    background: var(--black);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    color: var(--white);
-  }
-  #slide-7 .platform-note .note-icon {
-    font-size: 22px;
-    flex-shrink: 0;
-  }
-  #slide-7 .platform-note p {
-    font-size: clamp(11px, 1.1vw, 13px);
-    color: rgba(255,255,255,0.75);
-    line-height: 1.5;
-  }
-  #slide-7 .platform-note strong { color: var(--teal); }
+  /* S10 CTA */
+  .cta-card { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:28px; display:flex; flex-direction:column; gap:12px; flex:1; transition:border-color .2s, background .2s; }
+  .cta-card:hover { background:rgba(16,103,254,0.08); border-color:rgba(16,103,254,0.35); }
+  .cta-card.featured { background:rgba(16,103,254,0.1); border-color:rgba(16,103,254,0.35); }
+  .cta-for { font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--teal); }
+  .cta-card.featured .cta-for { color:#6ba3ff; }
+  .cta-card h4 { font-size:clamp(15px,1.5vw,19px); font-weight:800; color:#fff; line-height:1.3; }
+  .cta-card p  { font-size:clamp(12px,1.1vw,14px); color:rgba(255,255,255,0.52); line-height:1.6; }
+  .contact-block { text-align:center; padding-top:18px; border-top:1px solid rgba(255,255,255,0.08); }
+  .contact-block p { font-size:clamp(12px,1.1vw,14px); color:rgba(255,255,255,0.4); line-height:1.7; }
+  .contact-block strong { color:rgba(255,255,255,0.72); }
+  .contact-block a { color:var(--teal); text-decoration:none; }
+  .contact-block a:hover { text-decoration:underline; }
 
-  /* ═══════════════════════════════
-     SLIDE 8 — WHY IT MATTERS
-  ═══════════════════════════════ */
-  #slide-8 {
-    background: var(--white);
-    color: var(--black);
-  }
-  .why-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-top: 32px;
-    flex: 1;
-  }
-  .why-card {
-    border-radius: 18px;
-    padding: 36px 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    position: relative;
-    overflow: hidden;
-  }
-  .why-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--teal);
-  }
-  .why-card.c1 { background: var(--black); color: var(--white); }
-  .why-card.c2 { background: var(--teal-pale); color: var(--black); }
-  .why-card.c3 { background: var(--light); color: var(--black); border: 1px solid var(--border); }
-  .why-icon {
-    font-size: 30px;
-    width: 54px;
-    height: 54px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .why-card.c1 .why-icon { background: rgba(130,193,207,0.15); }
-  .why-card.c2 .why-icon { background: rgba(130,193,207,0.2); }
-  .why-card.c3 .why-icon { background: rgba(0,0,0,0.06); }
-  .why-card h3 {
-    font-size: clamp(16px, 1.8vw, 22px);
-    font-weight: 800;
-  }
-  .why-card.c1 h3 { color: var(--white); }
-  .why-card p {
-    font-size: clamp(12px, 1.1vw, 14px);
-    line-height: 1.6;
-  }
-  .why-card.c1 p { color: rgba(255,255,255,0.65); }
-  .why-card.c2 p, .why-card.c3 p { color: var(--mid); }
-  .why-stat {
-    font-size: clamp(20px, 2.5vw, 32px);
-    font-weight: 900;
-    color: var(--teal);
-    line-height: 1;
-    margin-top: auto;
-  }
-  .why-stat-label {
-    font-size: clamp(10px, 0.95vw, 12px);
-    color: #999;
-    font-weight: 500;
-  }
+  /* Modal */
+  #src-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.72); z-index:2000; align-items:center; justify-content:center; }
+  #src-modal.open { display:flex; }
+  #src-modal-box { background:#161b22; border:1px solid rgba(130,193,207,0.3); border-radius:16px; width:min(680px,92vw); max-height:80vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 24px 64px rgba(0,0,0,0.6); }
+  #src-modal-header { padding:14px 20px; background:#0d1117; border-bottom:1px solid rgba(255,255,255,0.07); display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-shrink:0; }
+  #src-modal-title { font-size:12px; font-weight:700; color:var(--teal); line-height:1.4; display:flex; align-items:center; flex-wrap:wrap; gap:4px; }
+  #src-modal-close { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.45); cursor:pointer; font-size:14px; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .15s; }
+  #src-modal-close:hover { background:rgba(255,255,255,0.12); color:#fff; }
+  #src-modal-body { padding:20px 22px; overflow-y:auto; flex:1; }
+  #src-modal-body::-webkit-scrollbar { width:5px; }
+  #src-modal-body::-webkit-scrollbar-track { background:rgba(255,255,255,0.03); }
+  #src-modal-body::-webkit-scrollbar-thumb { background:rgba(130,193,207,0.25); border-radius:3px; }
 
-  /* ═══════════════════════════════
-     SLIDE 9 — LIVE DEMO
-  ═══════════════════════════════ */
-  #slide-8 {
-    background: #0d1117;
-    color: var(--white);
-  }
-  #slide-9 {
-    background: var(--black);
-    color: var(--white);
-  }
-  #slide-8 .slide-inner {
-    padding: 32px 48px 80px;
-  }
-  #slide-8 .demo-intro {
-    background: rgba(130,193,207,0.07);
-    border: 1px solid rgba(130,193,207,0.18);
-    border-radius: 10px;
-    padding: 12px 18px;
-    margin-bottom: 16px;
-  }
-  #slide-8 .demo-intro p {
-    font-size: clamp(10px, 1vw, 12px);
-    color: rgba(255,255,255,0.6);
-    line-height: 1.5;
-  }
-  #slide-8 .demo-intro strong { color: var(--teal); }
-  #slide-8 .demo-split {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    gap: 16px;
-    flex: 1;
-    min-height: 0;
-  }
-  /* Left — chat */
-  .live-chat {
-    background: #161b22;
-    border: 1px solid rgba(130,193,207,0.15);
-    border-radius: 14px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .live-chat-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .agent-dot {
-    width: 8px;
-    height: 8px;
-    background: #3fb950;
-    border-radius: 50%;
-    box-shadow: 0 0 6px #3fb950;
-  }
-  .live-chat-header span {
-    font-size: 12px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.8);
-  }
-  .live-chat-header small {
-    font-size: 10px;
-    color: rgba(255,255,255,0.35);
-    margin-left: auto;
-  }
-  .live-messages {
-    flex: 1;
-    padding: 14px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-height: 0;
-  }
-  .live-msg {
-    padding: 9px 12px;
-    border-radius: 10px;
-    font-size: 11px;
-    line-height: 1.55;
-    max-width: 90%;
-  }
-  .live-msg.user {
-    background: var(--teal);
-    color: #0d1117;
-    align-self: flex-end;
-    border-bottom-right-radius: 3px;
-    font-weight: 600;
-  }
-  .live-msg.agent {
-    background: rgba(255,255,255,0.07);
-    color: rgba(255,255,255,0.85);
-    align-self: flex-start;
-    border-bottom-left-radius: 3px;
-  }
-  .live-msg.thinking {
-    background: rgba(130,193,207,0.08);
-    color: var(--teal);
-    border: 1px dashed rgba(130,193,207,0.3);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .spinner {
-    width: 12px;
-    height: 12px;
-    border: 2px solid rgba(130,193,207,0.3);
-    border-top-color: var(--teal);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    flex-shrink: 0;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .example-btns {
-    padding: 10px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    border-top: 1px solid rgba(255,255,255,0.07);
-  }
-  .example-btn {
-    padding: 8px 12px;
-    background: rgba(130,193,207,0.07);
-    border: 1px solid rgba(130,193,207,0.2);
-    border-radius: 8px;
-    color: var(--teal);
-    font-size: 10px;
-    font-weight: 500;
-    cursor: pointer;
-    text-align: left;
-    transition: background 0.2s, border-color 0.2s;
-    font-family: var(--font);
-    line-height: 1.4;
-  }
-  .example-btn:hover {
-    background: rgba(130,193,207,0.14);
-    border-color: rgba(130,193,207,0.4);
-  }
-  .live-input-row {
-    padding: 10px 14px;
-    display: flex;
-    gap: 8px;
-    border-top: 1px solid rgba(255,255,255,0.07);
-  }
-  .live-input {
-    flex: 1;
-    padding: 8px 12px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px;
-    color: var(--white);
-    font-size: 11px;
-    font-family: var(--font);
-    outline: none;
-  }
-  .live-input:focus { border-color: rgba(130,193,207,0.4); }
-  .live-input::placeholder { color: rgba(255,255,255,0.25); }
-  .live-send {
-    width: 32px;
-    height: 32px;
-    background: var(--teal);
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    color: #0d1117;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: background 0.2s;
-  }
-  .live-send:hover { background: var(--teal-dark); }
+  /* Spinner */
+  .spinner { width:12px; height:12px; border:2px solid rgba(130,193,207,0.25); border-top-color:var(--teal); border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
+  @keyframes spin { to { transform:rotate(360deg); } }
 
-  /* Right — response panels */
-  .live-response {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow-y: auto;
-    min-height: 0;
-  }
-  .resp-panel {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 12px;
-    padding: 14px 16px;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-  }
-  .resp-panel.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .resp-panel-label {
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--teal);
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .resp-intent p {
-    font-size: 12px;
-    color: rgba(255,255,255,0.75);
-    line-height: 1.5;
-    font-style: italic;
-  }
-  .resp-query pre {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: #79c0ff;
-    background: rgba(0,0,0,0.3);
-    padding: 10px 14px;
-    border-radius: 8px;
-    overflow-x: auto;
-    line-height: 1.6;
-  }
-  .resp-result-area {
-    min-height: 140px;
-  }
-  .metric-card {
-    background: rgba(130,193,207,0.07);
-    border: 1px solid rgba(130,193,207,0.18);
-    border-radius: 10px;
-    padding: 16px;
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-  }
-  .metric-value {
-    font-size: clamp(22px, 2.5vw, 32px);
-    font-weight: 900;
-    color: var(--teal);
-    line-height: 1;
-  }
-  .metric-unit {
-    font-size: 13px;
-    color: rgba(255,255,255,0.5);
-    font-weight: 500;
-  }
-  .metric-label {
-    font-size: 12px;
-    color: rgba(255,255,255,0.6);
-    margin-top: 4px;
-  }
-  .metric-range {
-    font-size: 10px;
-    color: rgba(130,193,207,0.6);
-    margin-top: 6px;
-  }
-  .chart-wrap {
-    position: relative;
-    height: 160px;
-  }
-  .chart-summary {
-    font-size: 11px;
-    color: rgba(255,255,255,0.6);
-    line-height: 1.5;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid rgba(255,255,255,0.07);
-  }
-  .chart-summary strong { color: var(--teal); }
-  .reasoning-toggle {
-    font-size: 10px;
-    color: rgba(255,255,255,0.4);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: 4px;
-    transition: color 0.2s;
-  }
-  .reasoning-toggle:hover { color: var(--teal); }
-  .reasoning-body {
-    display: none;
-    margin-top: 8px;
-    padding: 10px 12px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 8px;
-    font-size: 10px;
-    color: rgba(255,255,255,0.5);
-    line-height: 1.6;
-  }
-  .reasoning-body.open { display: block; }
-  #slide-8 .key-msg {
-    margin-top: 12px;
-    padding: 10px 16px;
-    background: rgba(130,193,207,0.08);
-    border-left: 3px solid var(--teal);
-    border-radius: 0 8px 8px 0;
-    font-size: 11px;
-    color: rgba(255,255,255,0.6);
-    font-style: italic;
-    line-height: 1.5;
-  }
-
-  /* ═══════════════════════════════
-     SLIDE 10 — CTA
-  ═══════════════════════════════ */
-  /* ═══════════════════════════════
-     SLIDE 9 — ARCHITECTURE
-  ═══════════════════════════════ */
-  #slide-7 {
-    background: var(--black);
-    color: var(--white);
-  }
-  .arch-diagram {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 24px;
-    gap: 0;
-    flex: 1.8;
-    min-height: 0;
-  }
-  .arch-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-  .arch-device {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 13px;
-    font-weight: 500;
-    color: rgba(255,255,255,0.8);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    white-space: nowrap;
-  }
-  .arch-device .dev-icon { font-size: 20px; }
-  .arch-box {
-    background: rgba(130,193,207,0.08);
-    border: 1px solid rgba(130,193,207,0.25);
-    border-radius: 16px;
-    padding: 20px 22px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
-  .arch-box.highlight {
-    background: rgba(130,193,207,0.16);
-    border-color: rgba(130,193,207,0.55);
-    box-shadow: 0 0 28px rgba(130,193,207,0.15);
-  }
-  .arch-box-icon { font-size: 30px; }
-  .arch-box h4 { font-size: clamp(13px,1.2vw,15px); font-weight:800; color:var(--white); line-height:1.3; }
-  .arch-box p { font-size: clamp(11px,1vw,12px); color:rgba(255,255,255,0.55); line-height:1.5; }
-  .arch-arrow {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 0 8px;
-    flex-shrink: 0;
-  }
-  .arch-arrow span { font-size: 22px; color: rgba(130,193,207,0.6); }
-  .arch-arrow small { font-size: 10px; color: rgba(255,255,255,0.3); text-align:center; max-width:80px; line-height:1.4; }
-  .pipeline-steps {
-    display: flex;
-    gap: 0;
-    margin-top: 16px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 12px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  .pip-step {
-    flex: 1;
-    padding: 12px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    border-right: 1px solid rgba(255,255,255,0.06);
-    position: relative;
-  }
-  .pip-step:last-child { border-right: none; }
-  .pip-step::after {
-    content: '→';
-    position: absolute;
-    right: -10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: rgba(130,193,207,0.3);
-    font-size: 14px;
-    z-index: 1;
-  }
-  .pip-step:last-child::after { display: none; }
-  .pip-num { font-size: 9px; font-weight:700; color:var(--teal); letter-spacing:0.1em; }
-  .pip-label { font-size: clamp(11px,1vw,13px); font-weight:700; color:var(--white); line-height:1.3; }
-  .pip-desc { font-size: clamp(10px,0.9vw,11px); color:rgba(255,255,255,0.4); line-height:1.4; }
-  .tech-badges {
-    display: flex;
-    gap: 8px;
-    margin-top: 14px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .tech-badge {
-    padding: 4px 10px;
-    border-radius: 6px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    font-size: 10px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.5);
-    letter-spacing: 0.05em;
-  }
-  .tech-badge.accent { border-color: rgba(130,193,207,0.3); color: var(--teal); background: rgba(130,193,207,0.07); }
-
-  /* ═══════════════════════════════
-     SLIDE 10 — UPDATED DEMO
-  ═══════════════════════════════ */
-  .cmp-btn {
-    padding: 9px 18px;
-    border-radius: 22px;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    border: 2px solid rgba(130,193,207,0.5);
-    background: rgba(130,193,207,0.12);
-    color: var(--teal);
-    font-family: var(--font);
-    transition: all 0.2s;
-    white-space: nowrap;
-    letter-spacing: 0.01em;
-  }
-  .cmp-btn:hover {
-    background: rgba(130,193,207,0.25);
-    color: #c8e8ef;
-    border-color: var(--teal);
-    box-shadow: 0 0 0 3px rgba(130,193,207,0.12);
-  }
-  .cmp-btn.active {
-    background: var(--teal);
-    color: #0d1117;
-    border-color: var(--teal);
-    box-shadow: 0 0 0 3px rgba(130,193,207,0.2);
-  }
-  .cmp-msg-user {
-    align-self: flex-end;
-    background: rgba(130,193,207,0.2);
-    color: var(--teal);
-    padding: 8px 12px;
-    border-radius: 10px 10px 2px 10px;
-    font-size: 11px;
-    font-weight: 600;
-    max-width: 88%;
-    line-height: 1.4;
-  }
-  .cmp-msg-generic {
-    align-self: flex-start;
-    background: rgba(255,255,255,0.06);
-    color: rgba(255,255,255,0.65);
-    padding: 10px 12px;
-    border-radius: 2px 10px 10px 10px;
-    font-size: 11px;
-    line-height: 1.6;
-    max-width: 96%;
-    border-left: 3px solid rgba(255,100,100,0.4);
-  }
-  .cmp-msg-bayes {
-    align-self: flex-start;
-    background: rgba(130,193,207,0.06);
-    color: rgba(255,255,255,0.8);
-    padding: 10px 12px;
-    border-radius: 2px 10px 10px 10px;
-    font-size: 11px;
-    line-height: 1.6;
-    max-width: 96%;
-    border-left: 3px solid var(--teal);
-  }
-  .cmp-thinking {
-    align-self: flex-start;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 10px;
-    font-style: italic;
-  }
-  .cmp-rag-trace {
-    background: rgba(130,193,207,0.05);
-    border: 1px solid rgba(130,193,207,0.15);
-    border-radius: 8px;
-    padding: 8px 10px;
-    font-size: 9px;
-    color: rgba(130,193,207,0.7);
-    line-height: 1.6;
-    font-family: var(--mono);
-    max-width: 96%;
-    align-self: flex-start;
-  }
-  .cmp-issues {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-top: 4px;
-    max-width: 96%;
-    align-self: flex-start;
-  }
-  .cmp-issue-tag {
-    font-size: 9px;
-    padding: 2px 7px;
-    border-radius: 5px;
-    background: rgba(239,68,68,0.1);
-    color: #f87171;
-    border: 1px solid rgba(239,68,68,0.2);
-    font-weight: 600;
-  }
-  .cmp-sources {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 4px;
-    max-width: 96%;
-    align-self: flex-start;
-  }
-  .cmp-source-chip {
-    font-size: 9px;
-    padding: 3px 9px;
-    border-radius: 6px;
-    background: rgba(130,193,207,0.1);
-    color: var(--teal);
-    border: 1px solid rgba(130,193,207,0.25);
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .cmp-source-chip:hover { background: rgba(130,193,207,0.2); }
-  .cmp-escalation {
-    font-size: 9px;
-    padding: 4px 8px;
-    border-radius: 6px;
-    background: rgba(251,191,36,0.08);
-    color: #fbbf24;
-    border: 1px solid rgba(251,191,36,0.2);
-    max-width: 96%;
-    align-self: flex-start;
-    margin-top: 2px;
-    font-style: italic;
-  }
-  .cmp-quality {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-top: 4px;
-    max-width: 96%;
-    align-self: flex-start;
-  }
-  .cmp-quality-tag {
-    font-size: 9px;
-    padding: 2px 7px;
-    border-radius: 5px;
-    background: rgba(63,185,80,0.1);
-    color: #3fb950;
-    border: 1px solid rgba(63,185,80,0.2);
-    font-weight: 600;
-  }
-  /* Source modal */
-  #src-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 2000;
-    align-items: center;
-    justify-content: center;
-  }
-  #src-modal.open { display: flex; }
-  #src-modal-box {
-    background: #161b22;
-    border: 1px solid rgba(130,193,207,0.3);
-    border-radius: 16px;
-    width: min(680px, 92vw);
-    max-height: 80vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.6);
-  }
-  #src-modal-header {
-    padding: 14px 20px;
-    background: #0d1117;
-    border-bottom: 1px solid rgba(130,193,207,0.15);
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    flex-shrink: 0;
-  }
-  #src-modal-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--teal);
-    line-height: 1.4;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-  #src-modal-close {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: rgba(255,255,255,0.5);
-    cursor: pointer;
-    font-size: 14px;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: background 0.15s;
-  }
-  #src-modal-close:hover { background: rgba(255,255,255,0.12); color: var(--white); }
-  #src-modal-body {
-    padding: 20px 22px;
-    overflow-y: auto;
-    flex: 1;
-  }
-  #src-modal-body::-webkit-scrollbar { width: 5px; }
-  #src-modal-body::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
-  #src-modal-body::-webkit-scrollbar-thumb { background: rgba(130,193,207,0.25); border-radius: 3px; }
-
-  .demo-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-    flex-shrink: 0;
-  }
-  .demo-tab {
-    padding: 7px 16px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    border: 1px solid rgba(130,193,207,0.25);
-    background: transparent;
-    color: rgba(255,255,255,0.4);
-    transition: all 0.2s;
-    font-family: var(--font);
-  }
-  .demo-tab.active {
-    background: rgba(130,193,207,0.15);
-    color: var(--teal);
-    border-color: rgba(130,193,207,0.45);
-  }
-
-  #slide-9 {
-    background: var(--black);
-    color: var(--white);
-  }
-  #slide-10 .cta-bg {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 60% 60% at 50% 100%, rgba(130,193,207,0.1) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  #slide-10 .slide-inner {
-    position: relative;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: 32px;
-    padding-bottom: 100px;
-  }
-  #slide-10 h1.slide-title {
-    font-size: clamp(32px, 4.5vw, 58px);
-    color: var(--white);
-  }
-  #slide-10 h1.slide-title span { color: var(--teal); }
-  #slide-10 .cta-sub {
-    font-size: clamp(13px, 1.4vw, 17px);
-    color: rgba(255,255,255,0.5);
-    max-width: 520px;
-  }
-  .cta-cards {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    width: 100%;
-    max-width: 700px;
-  }
-  .cta-card {
-    flex: 1;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 18px;
-    padding: 28px;
-    text-align: left;
-    transition: border-color 0.2s, background 0.2s;
-    cursor: default;
-  }
-  .cta-card:hover {
-    background: rgba(130,193,207,0.07);
-    border-color: rgba(130,193,207,0.3);
-  }
-  .cta-card h4 {
-    font-size: clamp(14px, 1.5vw, 18px);
-    font-weight: 700;
-    color: var(--white);
-    margin-bottom: 8px;
-  }
-  .cta-card p {
-    font-size: clamp(11px, 1vw, 13px);
-    color: rgba(255,255,255,0.5);
-    line-height: 1.5;
-  }
-  .cta-card .cta-for {
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--teal);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-  .cta-arrow {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    background: var(--teal);
-    border-radius: 50%;
-    color: var(--black);
-    font-size: 14px;
-    margin-top: 14px;
-  }
-  .contact-block {
-    border-top: 1px solid rgba(255,255,255,0.08);
-    padding-top: 20px;
-    text-align: center;
-  }
-  .contact-block p {
-    font-size: clamp(12px, 1.1vw, 14px);
-    color: rgba(255,255,255,0.4);
-    line-height: 1.7;
-  }
-  .contact-block strong { color: rgba(255,255,255,0.75); }
-  .contact-block a { color: var(--teal); text-decoration: none; }
-  .contact-block a:hover { text-decoration: underline; }
-
-  /* ── KEYBOARD HINT ── */
-  #keyboard-hint {
-    position: fixed;
-    top: 20px;
-    right: 24px;
-    font-size: 10px;
-    color: rgba(255,255,255,0.2);
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    pointer-events: none;
-  }
-  .kbd {
-    padding: 2px 7px;
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 4px;
-    font-family: var(--mono);
-  }
 </style>
 </head>
 <body>
 
 <div id="deck">
 
-  <!-- ══════════════════════════════════════
-       SLIDE 1 — COVER
-  ══════════════════════════════════════ -->
-  <div class="slide active" id="slide-1">
-    <div class="cover-bg"></div>
-    <div class="cover-grid"></div>
-    <div class="slide-inner">
-      <div class="logo-lockup">
-        <div class="logo-badge">B</div>
-        <div class="logo-text">Impulse Healthcare · Bayes Impact</div>
+  <!-- SLIDE 1 — COVER -->
+  <div class="slide s-cover active" id="slide-1">
+    <div class="slide-inner" style="justify-content:center;padding-bottom:100px">
+      <div class="brand-corner">
+        <div class="brand-badge">B</div>
+        <span class="brand-label">Impulse Healthcare · Bayes Impact</span>
       </div>
-      <h1 class="slide-title">The Bayes Platform —<br><span>Powering AI-first Healthcare</span></h1>
-      <p class="slide-subtitle">How non-technical medical teams build, configure and operate their own AI agents</p>
-      <div class="cover-pills">
-        <span class="pill pill-teal">Sovereign & open-source</span>
+      <p class="eyebrow">Bayes Platform</p>
+      <h1 class="big" style="color:#fff;max-width:760px">Powering <em class="hl">AI-first</em><br>Healthcare</h1>
+      <p class="lead" style="max-width:560px;margin-top:16px">How non-technical medical teams build, configure and operate their own AI agents</p>
+      <div style="display:flex;gap:10px;margin-top:32px;flex-wrap:wrap">
+        <span class="pill pill-teal">Sovereign &amp; open-source</span>
         <span class="pill pill-teal">EU HDS-certified</span>
         <span class="pill pill-teal">No-code configuration</span>
       </div>
     </div>
-    <div class="cover-decoration">
-      <div class="cover-inner-icon">🏥</div>
-    </div>
+    <div class="cover-ring"><div style="position:relative;z-index:1;font-size:clamp(36px,5vw,58px)">🏥</div></div>
   </div>
 
-  <!-- ══════════════════════════════════════
-       SLIDE 2 — PROBLEM
-  ══════════════════════════════════════ -->
-  <div class="slide" id="slide-2">
+  <!-- SLIDE 2 — PROBLEM -->
+  <div class="slide s-light" id="slide-2">
     <div class="slide-inner">
-      <div class="slide-tag">01 — The challenge</div>
-      <h2 class="slide-title">Medical teams deserve to own their AI</h2>
+      <div class="brand-corner">
+        <div class="brand-badge">B</div>
+        <span class="brand-label">Impulse Healthcare · Bayes Impact</span>
+      </div>
+      <p class="eyebrow">01 — The challenge</p>
+      <h2 class="title">Medical teams deserve to <em class="hl">own their AI</em></h2>
       <div class="divider"></div>
-      <div class="two-col">
-        <div class="problem-card today">
-          <div class="card-tag">Today</div>
-          <h3>Locked into vendor solutions</h3>
-          <ul class="problem-list">
-            <li>Costly, opaque off-the-shelf tools built by external engineers</li>
-            <li>Disconnected from real clinical protocols and local knowledge</li>
-            <li>Data leaves the institution — privacy and sovereignty risks</li>
-            <li>Slow to update when guidelines change</li>
-            <li>No evaluation framework — no way to measure quality or trust</li>
-            <li>Every new use case requires a new contract, a new vendor</li>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:0">
+        <div class="prob-col-today">
+          <div class="prob-col-label">Today</div>
+          <h3 style="font-size:clamp(17px,1.8vw,22px);font-weight:800;color:var(--ink)">Locked into vendor solutions</h3>
+          <ul class="prob-list">
+            <li><span class="prob-icon-x">✕</span>Costly, opaque off-the-shelf tools built by external engineers</li>
+            <li><span class="prob-icon-x">✕</span>Disconnected from real clinical protocols and local knowledge</li>
+            <li><span class="prob-icon-x">✕</span>Data leaves the institution — privacy and sovereignty risks</li>
+            <li><span class="prob-icon-x">✕</span>Slow to update when guidelines change</li>
+            <li><span class="prob-icon-x">✕</span>No evaluation framework — no way to measure quality or trust</li>
+            <li><span class="prob-icon-x">✕</span>Every new use case requires a new contract, a new vendor</li>
           </ul>
         </div>
-        <div class="problem-card solution">
-          <div class="card-tag">With the Bayes Platform</div>
-          <h3>Medical teams become the authors</h3>
-          <ul class="problem-list">
-            <li>Clinicians configure agents in plain language — no code required</li>
-            <li>Knowledge base built from your own protocols, guidelines, FAQs</li>
-            <li>Hosted on EU servers, HDS-certified — data stays in the institution</li>
-            <li>Update the document base and the agent updates instantly</li>
-            <li>Built-in evaluation framework with scoring and iteration tracking</li>
-            <li>Every agent becomes a reusable digital common for other hospitals</li>
+        <div class="prob-col-bayes">
+          <div class="prob-col-label">With the Bayes Platform</div>
+          <h3 style="font-size:clamp(17px,1.8vw,22px);font-weight:800;color:#fff">Medical teams become the authors</h3>
+          <ul class="prob-list">
+            <li><span class="prob-icon-ok">✓</span>Clinicians configure agents in plain language — no code required</li>
+            <li><span class="prob-icon-ok">✓</span>Knowledge base built from your own protocols, guidelines, FAQs</li>
+            <li><span class="prob-icon-ok">✓</span>Hosted on EU servers, HDS-certified — data stays in the institution</li>
+            <li><span class="prob-icon-ok">✓</span>Update the document base and the agent updates instantly</li>
+            <li><span class="prob-icon-ok">✓</span>Built-in evaluation framework with scoring and iteration tracking</li>
+            <li><span class="prob-icon-ok">✓</span>Every agent becomes a reusable digital common for other hospitals</li>
           </ul>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════
-       SLIDE 3 — LIFECYCLE
-  ══════════════════════════════════════ -->
-  <div class="slide" id="slide-3">
+  <!-- SLIDE 3 — LIFECYCLE -->
+  <div class="slide s-dark" id="slide-3">
     <div class="slide-inner" style="padding:40px 56px 80px;gap:0">
-      <div class="slide-tag">02 — The platform</div>
-      <h2 class="slide-title" style="color:var(--white);margin-bottom:10px">The full agent lifecycle — in 4 steps</h2>
-      <div class="divider" style="margin:12px 0 16px"></div>
-
-      <!-- 4-column layout: description + illustration per step -->
+      <div class="brand-corner">
+        <div class="brand-badge">B</div>
+        <span class="brand-label">Impulse Healthcare · Bayes Impact</span>
+      </div>
+      <p class="eyebrow">02 — The platform</p>
+      <h2 class="title" style="font-size:clamp(20px,2.2vw,28px);margin-bottom:14px">The full agent lifecycle — in 4 steps</h2>
+      <div class="divider" style="margin:0 0 16px"></div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;flex:1;min-height:0">
-
-        <!-- ══ STEP 01 ══ -->
-        <div style="display:flex;flex-direction:column;gap:10px;min-height:0">
-          <!-- Header -->
-          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 14px 12px;flex-shrink:0">
-            <div style="font-size:11px;font-weight:700;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">Step 01</div>
-            <div style="font-size:28px;margin-bottom:10px">📂</div>
-            <div style="font-size:15px;font-weight:800;color:var(--white);margin-bottom:6px">Import document base</div>
-            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5">Upload protocols, patient leaflets, FAQs and clinical guidelines via drag-and-drop</div>
-          </div>
-          <!-- Illustration: document upload UI -->
-          <div style="background:#161b22;border:1px solid rgba(130,193,207,0.18);border-radius:12px;overflow:hidden;flex:1;display:flex;flex-direction:column">
-            <div style="padding:6px 10px;background:#0d1117;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:5px">
-              <span style="width:7px;height:7px;border-radius:50%;background:#ff6b6b;display:inline-block"></span>
-              <span style="width:7px;height:7px;border-radius:50%;background:#ffd93d;display:inline-block"></span>
-              <span style="width:7px;height:7px;border-radius:50%;background:#6bcb77;display:inline-block"></span>
-              <span style="font-size:8px;color:rgba(255,255,255,0.25);margin-left:6px;font-family:var(--mono)">Document base</span>
-            </div>
-            <div style="padding:10px;display:flex;flex-direction:column;gap:7px;flex:1">
-              <!-- Drop zone -->
+        <div class="lc-col">
+          <div class="lc-header"><div class="lc-step-num">Step 01</div><div class="lc-icon">📂</div><div class="lc-title">Import document base</div><div class="lc-desc">Upload protocols, patient leaflets, FAQs and clinical guidelines via drag-and-drop</div></div>
+          <div class="lc-panel">            <div class="lc-panel-bar"><span class="lc-dot" style="background:#ff6b6b"></span><span class="lc-dot" style="background:#ffd93d"></span><span class="lc-dot" style="background:#6bcb77"></span><span class="lc-panel-title">Document base</span></div>
+            <div class="lc-panel-body">
               <div style="border:1.5px dashed rgba(130,193,207,0.35);border-radius:8px;padding:10px;text-align:center;background:rgba(130,193,207,0.04)">
                 <div style="font-size:18px;margin-bottom:4px">📎</div>
                 <div style="font-size:8px;color:rgba(130,193,207,0.7);font-weight:600">Drop files here</div>
                 <div style="font-size:7px;color:rgba(255,255,255,0.25);margin-top:2px">PDF · DOCX · TXT</div>
               </div>
-              <!-- Doc list -->
               <div style="display:flex;flex-direction:column;gap:5px">
-                <div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:rgba(255,255,255,0.04);border-radius:6px;border:1px solid rgba(255,255,255,0.06)">
-                  <span style="font-size:12px">📄</span>
-                  <div style="flex:1;min-width:0">
-                    <div style="font-size:8px;color:rgba(255,255,255,0.7);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Anaesthesia_protocol_v3.pdf</div>
-                    <div style="font-size:7px;color:rgba(255,255,255,0.25)">1.2 MB · 847 chunks</div>
-                  </div>
-                  <span style="font-size:7px;font-weight:700;padding:2px 5px;border-radius:4px;background:#dcfce7;color:#16a34a">✓</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:rgba(255,255,255,0.04);border-radius:6px;border:1px solid rgba(255,255,255,0.06)">
-                  <span style="font-size:12px">📋</span>
-                  <div style="flex:1;min-width:0">
-                    <div style="font-size:8px;color:rgba(255,255,255,0.7);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Patient_FAQ_pre-op.docx</div>
-                    <div style="font-size:7px;color:rgba(255,255,255,0.25)">340 KB · 312 chunks</div>
-                  </div>
-                  <span style="font-size:7px;font-weight:700;padding:2px 5px;border-radius:4px;background:#dcfce7;color:#16a34a">✓</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:rgba(255,255,255,0.04);border-radius:6px;border:1px solid rgba(255,255,255,0.06)">
-                  <span style="font-size:12px">📑</span>
-                  <div style="flex:1;min-width:0">
-                    <div style="font-size:8px;color:rgba(255,255,255,0.7);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Contra-indications_2024.pdf</div>
-                    <div style="font-size:7px;color:rgba(255,255,255,0.25)">2.1 MB · indexing…</div>
-                  </div>
-                  <span style="font-size:7px;font-weight:700;padding:2px 5px;border-radius:4px;background:#fef9c3;color:#a16207">⏳</span>
-                </div>
+                <div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:rgba(255,255,255,0.04);border-radius:6px;border:1px solid rgba(255,255,255,0.06)"><span style="font-size:12px">📄</span><div style="flex:1;min-width:0"><div style="font-size:8px;color:rgba(255,255,255,0.7);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Anaesthesia_protocol_v3.pdf</div><div style="font-size:7px;color:rgba(255,255,255,0.25)">1.2 MB · 847 chunks</div></div><span style="font-size:7px;font-weight:700;padding:2px 5px;border-radius:4px;background:#dcfce7;color:#16a34a">✓</span></div>
+                <div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:rgba(255,255,255,0.04);border-radius:6px;border:1px solid rgba(255,255,255,0.06)"><span style="font-size:12px">📋</span><div style="flex:1;min-width:0"><div style="font-size:8px;color:rgba(255,255,255,0.7);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Patient_FAQ_pre-op.docx</div><div style="font-size:7px;color:rgba(255,255,255,0.25)">340 KB · 312 chunks</div></div><span style="font-size:7px;font-weight:700;padding:2px 5px;border-radius:4px;background:#dcfce7;color:#16a34a">✓</span></div>
+                <div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:rgba(255,255,255,0.04);border-radius:6px;border:1px solid rgba(255,255,255,0.06)"><span style="font-size:12px">📑</span><div style="flex:1;min-width:0"><div style="font-size:8px;color:rgba(255,255,255,0.7);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Contra-indications_2024.pdf</div><div style="font-size:7px;color:rgba(255,255,255,0.25)">2.1 MB · indexing…</div></div><span style="font-size:7px;font-weight:700;padding:2px 5px;border-radius:4px;background:#fef9c3;color:#a16207">⏳</span></div>
               </div>
               <div style="margin-top:auto;font-size:7px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.06);padding-top:6px">3 documents · 1,159 chunks · RAG index building</div>
-            </div>
-          </div>
+            </div></div>
         </div>
-
-        <!-- ══ STEP 02 ══ -->
-        <div style="display:flex;flex-direction:column;gap:10px;min-height:0">
-          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 14px 12px;flex-shrink:0">
-            <div style="font-size:11px;font-weight:700;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">Step 02</div>
-            <div style="font-size:28px;margin-bottom:10px">✍️</div>
-            <div style="font-size:15px;font-weight:800;color:var(--white);margin-bottom:6px">Configure system prompt</div>
-            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5">Define behaviour, tone, scope and safety limits in plain language — no coding required</div>
-          </div>
-          <!-- Illustration: prompt editor -->
-          <div style="background:#161b22;border:1px solid rgba(130,193,207,0.18);border-radius:12px;overflow:hidden;flex:1;display:flex;flex-direction:column">
-            <div style="padding:6px 10px;background:#0d1117;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:5px">
-              <span style="width:7px;height:7px;border-radius:50%;background:#ff6b6b;display:inline-block"></span>
-              <span style="width:7px;height:7px;border-radius:50%;background:#ffd93d;display:inline-block"></span>
-              <span style="width:7px;height:7px;border-radius:50%;background:#6bcb77;display:inline-block"></span>
-              <span style="font-size:8px;color:rgba(255,255,255,0.25);margin-left:6px;font-family:var(--mono)">System prompt</span>
-            </div>
-            <div style="padding:10px;display:flex;flex-direction:column;gap:8px;flex:1">
-              <!-- Prompt text -->
+        <div class="lc-col">
+          <div class="lc-header"><div class="lc-step-num">Step 02</div><div class="lc-icon">✍️</div><div class="lc-title">Configure system prompt</div><div class="lc-desc">Define behaviour, tone, scope and safety limits in plain language — no coding required</div></div>
+          <div class="lc-panel">            <div class="lc-panel-bar"><span class="lc-dot" style="background:#ff6b6b"></span><span class="lc-dot" style="background:#ffd93d"></span><span class="lc-dot" style="background:#6bcb77"></span><span class="lc-panel-title">System prompt</span></div>
+            <div class="lc-panel-body">
               <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px;flex:1">
-                <div style="font-size:8px;color:rgba(255,255,255,0.65);line-height:1.7;font-family:var(--font)">
-                  You are a <span style="color:var(--teal);font-weight:600">paediatric anaesthesia assistant</span> at Necker Hospital. Your role is to help <span style="color:var(--teal);font-weight:600">families prepare</span> for their child's operation.<br><br>
-                  Answer questions based <span style="color:#f59e0b;font-weight:600">exclusively</span> on the hospital's approved protocols. Use <span style="color:var(--teal);font-weight:600">clear, reassuring language</span> adapted for parents.<br><br>
-                  If a question requires medical judgement, <span style="color:#ef4444;font-weight:600">always escalate</span> to the clinical team. Never suggest specific drug doses.
-                </div>
+                <div style="font-size:8px;color:rgba(255,255,255,0.65);line-height:1.7;font-family:var(--font)">You are a <span style="color:var(--teal);font-weight:600">paediatric anaesthesia assistant</span> at Necker Hospital. Your role is to help <span style="color:var(--teal);font-weight:600">families prepare</span> for their child's operation.<br><br>Answer based <span style="color:#fbbf24;font-weight:600">exclusively</span> on approved hospital protocols. Use <span style="color:var(--teal);font-weight:600">clear, reassuring language</span>.<br><br>If medical judgement is needed, <span style="color:#f87171;font-weight:600">always escalate</span>. Never suggest drug doses.</div>
               </div>
-              <!-- Tags row -->
-              <div style="display:flex;flex-direction:column;gap:5px">
-                <div style="font-size:7px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase">Configuration tags</div>
-                <div style="display:flex;gap:5px;flex-wrap:wrap">
-                  <span style="font-size:7px;font-weight:700;padding:3px 7px;border-radius:5px;background:#dbeafe;color:#1d4ed8">Family-facing</span>
-                  <span style="font-size:7px;font-weight:700;padding:3px 7px;border-radius:5px;background:#dcfce7;color:#15803d">FR + EN</span>
-                  <span style="font-size:7px;font-weight:700;padding:3px 7px;border-radius:5px;background:#ffedd5;color:#c2410c">Escalate if medical</span>
-                </div>
+              <div style="display:flex;gap:5px;flex-wrap:wrap">
+                <span style="font-size:7px;font-weight:700;padding:3px 7px;border-radius:5px;background:#dbeafe;color:#1d4ed8">Family-facing</span>
+                <span style="font-size:7px;font-weight:700;padding:3px 7px;border-radius:5px;background:#dcfce7;color:#15803d">FR + EN</span>
+                <span style="font-size:7px;font-weight:700;padding:3px 7px;border-radius:5px;background:#ffedd5;color:#c2410c">Escalate if medical</span>
               </div>
-              <div style="padding:6px 8px;background:rgba(130,193,207,0.07);border-radius:6px;border-left:2px solid var(--teal)">
-                <div style="font-size:7px;color:rgba(255,255,255,0.4);line-height:1.5">No coding required — plain language only. The platform handles intent parsing, retrieval and response generation automatically.</div>
+              <div style="padding:6px 8px;background:rgba(16,103,254,0.07);border-radius:6px;border-left:2px solid rgba(16,103,254,0.4)">
+                <div style="font-size:7px;color:rgba(255,255,255,0.4);line-height:1.5">No coding required — plain language only.</div>
               </div>
-            </div>
-          </div>
+            </div></div>
         </div>
-
-        <!-- ══ STEP 03 ══ -->
-        <div style="display:flex;flex-direction:column;gap:10px;min-height:0">
-          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 14px 12px;flex-shrink:0">
-            <div style="font-size:11px;font-weight:700;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">Step 03</div>
-            <div style="font-size:28px;margin-bottom:10px">🧪</div>
-            <div style="font-size:15px;font-weight:800;color:var(--white);margin-bottom:6px">Test &amp; iterate</div>
-            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5">Golden dataset, scoring by dimension, iteration tracking — built in</div>
-          </div>
-          <!-- Illustration: eval dashboard -->
-          <div style="background:#161b22;border:1px solid rgba(130,193,207,0.18);border-radius:12px;overflow:hidden;flex:1;display:flex;flex-direction:column">
-            <div style="padding:6px 10px;background:#0d1117;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:5px">
-              <span style="width:7px;height:7px;border-radius:50%;background:#ff6b6b;display:inline-block"></span>
-              <span style="width:7px;height:7px;border-radius:50%;background:#ffd93d;display:inline-block"></span>
-              <span style="width:7px;height:7px;border-radius:50%;background:#6bcb77;display:inline-block"></span>
-              <span style="font-size:8px;color:var(--teal);margin-left:6px;font-weight:700;letter-spacing:0.08em">EVALUATION</span>
-            </div>
-            <div style="padding:10px;display:flex;flex-direction:column;gap:8px;flex:1">
-              <!-- Score -->
+        <div class="lc-col">
+          <div class="lc-header"><div class="lc-step-num">Step 03</div><div class="lc-icon">🧪</div><div class="lc-title">Test &amp; iterate</div><div class="lc-desc">Golden dataset, scoring by dimension, iteration tracking — built in</div></div>
+          <div class="lc-panel">            <div class="lc-panel-bar"><span class="lc-dot" style="background:#ff6b6b"></span><span class="lc-dot" style="background:#ffd93d"></span><span class="lc-dot" style="background:#6bcb77"></span><span class="lc-panel-title" style="color:var(--teal)">EVALUATION</span></div>
+            <div class="lc-panel-body">
               <div style="display:flex;align-items:center;justify-content:space-between">
-                <div>
-                  <div style="font-size:7px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.1em">Overall satisfaction</div>
-                  <div style="display:flex;align-items:baseline;gap:3px;margin-top:1px">
-                    <span style="font-size:22px;font-weight:900;color:var(--teal)">4.2</span>
-                    <span style="font-size:9px;color:rgba(255,255,255,0.25)">/5</span>
-                    <span style="font-size:8px;color:#3fb950;margin-left:3px">↑ +0.3</span>
-                  </div>
-                </div>
-                <div style="text-align:right">
-                  <div style="font-size:7px;color:rgba(255,255,255,0.25)">Golden dataset</div>
-                  <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.6)">47 <span style="font-size:7px;font-weight:400">cases</span></div>
-                </div>
+                <div><div style="font-size:7px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.1em">Overall satisfaction</div><div style="display:flex;align-items:baseline;gap:3px;margin-top:1px"><span style="font-size:22px;font-weight:900;color:var(--teal)">4.2</span><span style="font-size:9px;color:rgba(255,255,255,0.25)">/5</span><span style="font-size:8px;color:#3fb950;margin-left:3px">↑ +0.3</span></div></div>
+                <div style="text-align:right"><div style="font-size:7px;color:rgba(255,255,255,0.25)">Golden dataset</div><div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.6)">47 <span style="font-size:7px;font-weight:400">cases</span></div></div>
               </div>
-              <!-- Bars -->
               <div style="display:flex;flex-direction:column;gap:4px">
                 <div style="font-size:7px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.1em">By dimension</div>
                 <div style="display:flex;align-items:center;gap:5px"><div style="width:80px;font-size:7px;color:rgba(255,255,255,0.45);text-align:right">Accuracy</div><div style="flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:88%;background:#82C1CF;border-radius:2px"></div></div><div style="font-size:7px;font-weight:700;color:#82C1CF;width:24px">88%</div></div>
@@ -1928,59 +512,23 @@
                 <div style="display:flex;align-items:center;gap:5px"><div style="width:80px;font-size:7px;color:rgba(255,255,255,0.45);text-align:right">Tone &amp; empathy</div><div style="flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:91%;background:#3fb950;border-radius:2px"></div></div><div style="font-size:7px;font-weight:700;color:#3fb950;width:24px">91%</div></div>
                 <div style="display:flex;align-items:center;gap:5px"><div style="width:80px;font-size:7px;color:rgba(255,255,255,0.45);text-align:right">Safety</div><div style="flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:100%;background:#3fb950;border-radius:2px"></div></div><div style="font-size:7px;font-weight:700;color:#3fb950;width:24px">100%</div></div>
               </div>
-              <!-- Feedback -->
               <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:7px;display:flex;flex-direction:column;gap:4px">
                 <div style="font-size:7px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.1em">Recent feedback</div>
-                <div style="display:flex;align-items:flex-start;gap:5px;padding:4px 6px;background:rgba(255,255,255,0.03);border-radius:5px">
-                  <span style="font-size:9px">👍</span><span style="font-size:8px;color:rgba(255,255,255,0.45);flex:1;line-height:1.4">Very clear explanation of fasting rules.</span><span style="font-size:8px;font-weight:700;color:var(--teal)">4.8</span>
-                </div>
-                <div style="display:flex;align-items:flex-start;gap:5px;padding:4px 6px;background:rgba(255,255,255,0.03);border-radius:5px">
-                  <span style="font-size:9px">⚠️</span><span style="font-size:8px;color:rgba(255,255,255,0.45);flex:1;line-height:1.4">Answer on medication was too generic.</span><span style="font-size:8px;font-weight:700;color:#f59e0b">2.9</span>
-                </div>
-                <div style="display:flex;align-items:flex-start;gap:5px;padding:4px 6px;background:rgba(255,255,255,0.03);border-radius:5px">
-                  <span style="font-size:9px">👍</span><span style="font-size:8px;color:rgba(255,255,255,0.45);flex:1;line-height:1.4">Reassuring, would recommend.</span><span style="font-size:8px;font-weight:700;color:var(--teal)">4.7</span>
-                </div>
+                <div style="display:flex;align-items:flex-start;gap:5px;padding:4px 6px;background:rgba(255,255,255,0.03);border-radius:5px"><span style="font-size:9px">👍</span><span style="font-size:8px;color:rgba(255,255,255,0.45);flex:1;line-height:1.4">Very clear fasting explanation.</span><span style="font-size:8px;font-weight:700;color:var(--teal)">4.8</span></div>
+                <div style="display:flex;align-items:flex-start;gap:5px;padding:4px 6px;background:rgba(255,255,255,0.03);border-radius:5px"><span style="font-size:9px">⚠️</span><span style="font-size:8px;color:rgba(255,255,255,0.45);flex:1;line-height:1.4">Answer on medication too generic.</span><span style="font-size:8px;font-weight:700;color:#f59e0b">2.9</span></div>
+                <div style="display:flex;align-items:flex-start;gap:5px;padding:4px 6px;background:rgba(255,255,255,0.03);border-radius:5px"><span style="font-size:9px">👍</span><span style="font-size:8px;color:rgba(255,255,255,0.45);flex:1;line-height:1.4">Reassuring, would recommend.</span><span style="font-size:8px;font-weight:700;color:var(--teal)">4.7</span></div>
               </div>
-            </div>
-          </div>
+            </div></div>
         </div>
-
-        <!-- ══ STEP 04 ══ -->
-        <div style="display:flex;flex-direction:column;gap:10px;min-height:0">
-          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 14px 12px;flex-shrink:0">
-            <div style="font-size:11px;font-weight:700;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">Step 04</div>
-            <div style="font-size:28px;margin-bottom:10px">🚀</div>
-            <div style="font-size:15px;font-weight:800;color:var(--white);margin-bottom:6px">Deploy &amp; monitor</div>
-            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5">Live monitoring, feedback loops, questions not addressed — all in one dashboard</div>
-          </div>
-          <!-- Illustration: live monitoring -->
-          <div style="background:#161b22;border:1px solid rgba(130,193,207,0.18);border-radius:12px;overflow:hidden;flex:1;display:flex;flex-direction:column">
-            <div style="padding:6px 10px;background:#0d1117;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:5px">
-              <span style="width:7px;height:7px;border-radius:50%;background:#ff6b6b;display:inline-block"></span>
-              <span style="width:7px;height:7px;border-radius:50%;background:#ffd93d;display:inline-block"></span>
-              <span style="width:7px;height:7px;border-radius:50%;background:#6bcb77;display:inline-block"></span>
-              <span style="display:flex;align-items:center;gap:4px;margin-left:6px"><span style="width:5px;height:5px;border-radius:50%;background:#3fb950;display:inline-block;box-shadow:0 0 4px #3fb950"></span><span style="font-size:8px;color:#3fb950;font-weight:700;letter-spacing:0.08em">LIVE</span></span>
-            </div>
-            <div style="padding:10px;display:flex;flex-direction:column;gap:8px;flex:1">
-              <!-- KPIs -->
+        <div class="lc-col">
+          <div class="lc-header"><div class="lc-step-num">Step 04</div><div class="lc-icon">🚀</div><div class="lc-title">Deploy &amp; monitor</div><div class="lc-desc">Live monitoring, feedback loops, questions not addressed — all in one dashboard</div></div>
+          <div class="lc-panel">            <div class="lc-panel-bar"><span class="lc-dot" style="background:#ff6b6b"></span><span class="lc-dot" style="background:#ffd93d"></span><span class="lc-dot" style="background:#6bcb77"></span><span style="display:flex;align-items:center;gap:4px;margin-left:6px"><span style="width:5px;height:5px;border-radius:50%;background:#3fb950;display:inline-block;box-shadow:0 0 4px #3fb950"></span><span style="font-size:8px;color:#3fb950;font-weight:700;letter-spacing:.08em">LIVE</span></span></div>
+            <div class="lc-panel-body">
               <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px">
-                <div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:6px;text-align:center">
-                  <div style="font-size:11px">💬</div>
-                  <div style="font-size:14px;font-weight:900;color:var(--teal);line-height:1.1;margin-top:1px">312</div>
-                  <div style="font-size:6.5px;color:rgba(255,255,255,0.3);margin-top:1px">Conversations</div>
-                </div>
-                <div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:6px;text-align:center">
-                  <div style="font-size:11px">✅</div>
-                  <div style="font-size:14px;font-weight:900;color:#3fb950;line-height:1.1;margin-top:1px">94%</div>
-                  <div style="font-size:6.5px;color:rgba(255,255,255,0.3);margin-top:1px">Resolved</div>
-                </div>
-                <div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:6px;text-align:center">
-                  <div style="font-size:11px">⏱️</div>
-                  <div style="font-size:14px;font-weight:900;color:var(--teal);line-height:1.1;margin-top:1px">8s</div>
-                  <div style="font-size:6.5px;color:rgba(255,255,255,0.3);margin-top:1px">Avg response</div>
-                </div>
+                <div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:6px;text-align:center"><div style="font-size:11px">💬</div><div style="font-size:14px;font-weight:900;color:var(--teal);line-height:1.1;margin-top:1px">312</div><div style="font-size:6.5px;color:rgba(255,255,255,0.3);margin-top:1px">Conversations</div></div>
+                <div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:6px;text-align:center"><div style="font-size:11px">✅</div><div style="font-size:14px;font-weight:900;color:#3fb950;line-height:1.1;margin-top:1px">94%</div><div style="font-size:6.5px;color:rgba(255,255,255,0.3);margin-top:1px">Resolved</div></div>
+                <div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:6px;text-align:center"><div style="font-size:11px">⏱️</div><div style="font-size:14px;font-weight:900;color:var(--teal);line-height:1.1;margin-top:1px">8s</div><div style="font-size:6.5px;color:rgba(255,255,255,0.3);margin-top:1px">Avg response</div></div>
               </div>
-              <!-- Top questions -->
               <div style="display:flex;flex-direction:column;gap:4px">
                 <div style="font-size:7px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.1em">Top recurring questions</div>
                 <div style="display:flex;align-items:center;gap:5px"><div style="flex:1;font-size:7.5px;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Can my child drink water before?</div><div style="width:50px;height:4px;background:rgba(255,255,255,0.07);border-radius:2px;flex-shrink:0;overflow:hidden"><div style="height:100%;width:100%;background:rgba(130,193,207,0.6);border-radius:2px"></div></div><div style="font-size:7px;color:var(--teal);font-weight:700;width:18px;text-align:right">87</div></div>
@@ -1988,339 +536,158 @@
                 <div style="display:flex;align-items:center;gap:5px"><div style="flex:1;font-size:7.5px;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Can they keep their teddy bear?</div><div style="width:50px;height:4px;background:rgba(255,255,255,0.07);border-radius:2px;flex-shrink:0;overflow:hidden"><div style="height:100%;width:47%;background:rgba(130,193,207,0.6);border-radius:2px"></div></div><div style="font-size:7px;color:var(--teal);font-weight:700;width:18px;text-align:right">41</div></div>
                 <div style="display:flex;align-items:center;gap:5px"><div style="flex:1;font-size:7.5px;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">What if my child is sick on the day?</div><div style="width:50px;height:4px;background:rgba(255,255,255,0.07);border-radius:2px;flex-shrink:0;overflow:hidden"><div style="height:100%;width:40%;background:rgba(130,193,207,0.6);border-radius:2px"></div></div><div style="font-size:7px;color:var(--teal);font-weight:700;width:18px;text-align:right">35</div></div>
               </div>
-              <!-- Not addressed -->
               <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:7px;display:flex;flex-direction:column;gap:4px">
-                <div style="font-size:7px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.1em">⚠️ Not addressed — to review</div>
-                <div style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,0.03);border-radius:5px;border-left:2px solid #f59e0b">
-                  <span style="font-size:7.5px;color:rgba(255,255,255,0.45);flex:1;line-height:1.4">Anaesthetic with a cold?</span>
-                  <span style="font-size:7px;font-weight:700;color:#f59e0b">Escalated</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,0.03);border-radius:5px;border-left:2px solid #ef4444">
-                  <span style="font-size:7.5px;color:rgba(255,255,255,0.45);flex:1;line-height:1.4">Risks for child with heart murmur?</span>
-                  <span style="font-size:7px;font-weight:700;color:#ef4444">Out of scope</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,0.03);border-radius:5px;border-left:2px solid #f59e0b">
-                  <span style="font-size:7.5px;color:rgba(255,255,255,0.45);flex:1;line-height:1.4">Why paracetamol over ibuprofen?</span>
-                  <span style="font-size:7px;font-weight:700;color:#f59e0b">Needs update</span>
-                </div>
+                <div style="font-size:7px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.1em">⚠️ Not addressed</div>
+                <div style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,0.03);border-radius:5px;border-left:2px solid #f59e0b"><span style="font-size:7.5px;color:rgba(255,255,255,0.45);flex:1;line-height:1.4">Anaesthetic with a cold?</span><span style="font-size:7px;font-weight:700;color:#f59e0b">Escalated</span></div>
+                <div style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,0.03);border-radius:5px;border-left:2px solid #ef4444"><span style="font-size:7.5px;color:rgba(255,255,255,0.45);flex:1;line-height:1.4">Risks for child with heart murmur?</span><span style="font-size:7px;font-weight:700;color:#ef4444">Out of scope</span></div>
               </div>
-            </div>
-          </div>
+            </div></div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <div class="slide" id="slide-4">
+  <!-- SLIDE 4 — COMPARISON DEMO -->
+  <div class="slide s-dark" id="slide-4">
     <div class="slide-inner" style="padding:36px 56px 80px;gap:0">
-      <div class="slide-tag">03 — Live comparison</div>
-      <h2 class="slide-title" style="font-size:clamp(18px,2vw,26px);margin-bottom:10px">Generic AI <span style="color:rgba(255,255,255,0.25);font-weight:400;margin:0 10px">vs</span> <span style="color:var(--teal)">Bayes Platform agent</span> — same question, very different answers</h2>
-      <div class="divider" style="margin:8px 0 12px"></div>
-
-      <!-- Question buttons -->
-      <div style="display:flex;gap:8px;margin-bottom:12px;flex-shrink:0;flex-wrap:wrap">
-        <span style="font-size:10px;color:rgba(255,255,255,0.3);display:flex;align-items:center;margin-right:4px">Ask both agents:</span>
+      <div class="brand-corner">
+        <div class="brand-badge">B</div>
+        <span class="brand-label">Impulse Healthcare · Bayes Impact</span>
+      </div>
+      <p class="eyebrow">03 — Live comparison</p>
+      <h2 class="title" style="font-size:clamp(18px,2vw,26px);margin-bottom:12px">Generic AI <span style="color:rgba(255,255,255,0.25);font-weight:400;margin:0 8px">vs</span> <em class="hl">Bayes Platform agent</em> — same question, very different answers</h2>
+      <div class="divider" style="margin:0 0 12px"></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-shrink:0;flex-wrap:wrap;align-items:center">
+        <span style="font-size:10px;color:rgba(255,255,255,0.3);margin-right:4px">Ask both agents:</span>
         <button class="cmp-btn" onclick="compareDemo(0)">💧 Fasting rules before surgery</button>
         <button class="cmp-btn" onclick="compareDemo(1)">💊 Medication on the day of surgery</button>
         <button class="cmp-btn" onclick="compareDemo(2)">🤧 My child has a cold — do we proceed?</button>
         <button class="cmp-btn" onclick="compareDemo(3)">☕ Is there a cafeteria on site?</button>
       </div>
-
-      <!-- Split panels -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;min-height:0">
-
-        <!-- LEFT: Generic AI -->
-        <div style="display:flex;flex-direction:column;gap:0;min-height:0">
-          <div style="padding:8px 14px;background:#1a1a1a;border:1px solid rgba(255,255,255,0.1);border-bottom:none;border-radius:12px 12px 0 0;display:flex;align-items:center;gap:8px">
-            <div style="display:flex;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#555;display:inline-block"></span><span style="width:8px;height:8px;border-radius:50%;background:#555;display:inline-block"></span><span style="width:8px;height:8px;border-radius:50%;background:#555;display:inline-block"></span></div>
-            <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35)">Generic AI assistant</span>
-            <span style="margin-left:auto;font-size:9px;padding:2px 8px;border-radius:10px;background:rgba(255,100,100,0.1);color:rgba(255,130,130,0.7);border:1px solid rgba(255,100,100,0.2)">No document base · No guardrails</span>
-          </div>
-          <div id="cmp-left" style="background:#141414;border:1px solid rgba(255,255,255,0.08);border-top:none;border-radius:0 0 12px 12px;flex:1;display:flex;flex-direction:column;overflow:hidden">
-            <div id="cmp-left-msgs" style="flex:1;padding:14px;display:flex;flex-direction:column;gap:8px;overflow-y:auto">
-              <div style="font-size:11px;color:rgba(255,255,255,0.2);text-align:center;margin:auto;padding:20px">Select a question above to compare both agents</div>
-            </div>
-          </div>
+        <div style="display:flex;flex-direction:column;min-height:0">
+          <div class="cmp-panel-header cmp-panel-left"><div style="display:flex;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#555;display:inline-block"></span><span style="width:8px;height:8px;border-radius:50%;background:#555;display:inline-block"></span><span style="width:8px;height:8px;border-radius:50%;background:#555;display:inline-block"></span></div><span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35)">Generic AI assistant</span><span style="margin-left:auto;font-size:9px;padding:2px 8px;border-radius:10px;background:rgba(239,68,68,0.1);color:rgba(255,130,130,0.7);border:1px solid rgba(239,68,68,0.2)">No document base · No guardrails</span></div>
+          <div class="cmp-panel-body cmp-panel-left-body" style="flex:1;min-height:0"><div id="cmp-left-msgs" class="cmp-msgs"><div style="font-size:11px;color:rgba(255,255,255,0.18);text-align:center;margin:auto;padding:20px">Select a question above to compare both agents</div></div></div>
         </div>
-
-        <!-- RIGHT: Bayes Platform -->
-        <div style="display:flex;flex-direction:column;gap:0;min-height:0">
-          <div style="padding:8px 14px;background:#0d1a1c;border:1px solid rgba(130,193,207,0.3);border-bottom:none;border-radius:12px 12px 0 0;display:flex;align-items:center;gap:8px">
-            <div style="display:flex;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#ff6b6b;display:inline-block"></span><span style="width:8px;height:8px;border-radius:50%;background:#ffd93d;display:inline-block"></span><span style="width:8px;height:8px;border-radius:50%;background:#6bcb77;display:inline-block"></span></div>
-            <span style="font-size:10px;font-weight:700;color:var(--teal)">Bayes Platform agent</span>
-            <span style="font-size:8px;color:rgba(130,193,207,0.5);font-family:var(--mono);margin-left:4px">Necker · Paediatric anaesthesia</span>
-            <span style="margin-left:auto;display:flex;align-items:center;gap:4px;font-size:9px;padding:2px 8px;border-radius:10px;background:rgba(130,193,207,0.1);color:var(--teal);border:1px solid rgba(130,193,207,0.25)"><span style="width:5px;height:5px;border-radius:50%;background:#3fb950;display:inline-block;box-shadow:0 0 4px #3fb950"></span>RAG · Guardrails · Sources</span>
-          </div>
-          <div id="cmp-right" style="background:#0d1117;border:1px solid rgba(130,193,207,0.2);border-top:none;border-radius:0 0 12px 12px;flex:1;display:flex;flex-direction:column;overflow:hidden">
-            <div id="cmp-right-msgs" style="flex:1;padding:14px;display:flex;flex-direction:column;gap:8px;overflow-y:auto">
-              <div style="font-size:11px;color:rgba(255,255,255,0.15);text-align:center;margin:auto;padding:20px">The configured agent will show its reasoning and sources</div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <div class="slide" id="slide-5">
-    <div class="slide-inner">
-      <div class="slide-tag">04 — Technical architecture</div>
-      <h2 class="slide-title">Built for healthcare. Designed for trust.</h2>
-      <div class="divider"></div>
-      <div class="specs-grid">
-        <div class="spec-card">
-          <div class="spec-icon">🔒</div>
-          <h4>Sovereign & open-source</h4>
-          <p>Hosted on EU servers, HDS-certified. No data sent to third-party AI providers for training. Full code transparency.</p>
-        </div>
-        <div class="spec-card">
-          <div class="spec-icon">🔍</div>
-          <h4>RAG architecture</h4>
-          <p>Retrieval-Augmented Generation — the agent answers from your institution's document base, not generic internet knowledge.</p>
-        </div>
-        <div class="spec-card">
-          <div class="spec-icon">🤖</div>
-          <h4>Multi-agent support</h4>
-          <p>Conversational RAG agents, structured data extraction, questionnaire agents, eligibility agents — all on one platform.</p>
-        </div>
-        <div class="spec-card">
-          <div class="spec-icon">🖱️</div>
-          <h4>No-code configuration</h4>
-          <p>System prompt in plain language. Document import via drag-and-drop. No technical skills required from clinical teams.</p>
-        </div>
-        <div class="spec-card">
-          <div class="spec-icon">📊</div>
-          <h4>Built-in eval framework</h4>
-          <p>Golden dataset testing, scoring by dimension (accuracy, completeness, format, tone), full iteration history.</p>
-        </div>
-        <div class="spec-card">
-          <div class="spec-icon">🌐</div>
-          <h4>Open-source publishing</h4>
-          <p>Documentation templates, licence management, structured reuse pipeline — every agent can become a digital common.</p>
-        </div>
-        <div class="spec-card">
-          <div class="spec-icon">🛡️</div>
-          <h4>GDPR & AI Act compliant</h4>
-          <p>Low-risk classification. No personal data in standard scope. Immediate session data deletion. Full audit trail.</p>
-        </div>
-        <div class="spec-card">
-          <div class="spec-icon">⚡</div>
-          <h4>Rapid deployment</h4>
-          <p>Functional prototype in under 6 weeks. Designed for iterative improvement without engineering dependencies.</p>
+        <div style="display:flex;flex-direction:column;min-height:0">
+          <div class="cmp-panel-header cmp-panel-right"><div style="display:flex;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#ff6b6b;display:inline-block"></span><span style="width:8px;height:8px;border-radius:50%;background:#ffd93d;display:inline-block"></span><span style="width:8px;height:8px;border-radius:50%;background:#6bcb77;display:inline-block"></span></div><span style="font-size:10px;font-weight:700;color:#6ba3ff">Bayes Platform agent</span><span style="font-size:8px;color:rgba(130,193,207,0.5);font-family:var(--mono);margin-left:4px">Necker · Paediatric anaesthesia</span><span style="margin-left:auto;display:flex;align-items:center;gap:4px;font-size:9px;padding:2px 8px;border-radius:10px;background:rgba(16,103,254,0.12);color:#6ba3ff;border:1px solid rgba(16,103,254,0.25)"><span style="width:5px;height:5px;border-radius:50%;background:#3fb950;display:inline-block;box-shadow:0 0 4px #3fb950"></span>RAG · Guardrails · Sources</span></div>
+          <div class="cmp-panel-body cmp-panel-right-body" style="flex:1;min-height:0"><div id="cmp-right-msgs" class="cmp-msgs"><div style="font-size:11px;color:rgba(255,255,255,0.14);text-align:center;margin:auto;padding:20px">The configured agent will show its reasoning and sources</div></div></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════
-       SLIDE 6 — USE CASES
-  ══════════════════════════════════════ -->
-  <div class="slide" id="slide-6">
+  <!-- SLIDE 5 — TECH SPECS -->
+  <div class="slide s-light" id="slide-5">
     <div class="slide-inner">
-      <div class="slide-tag">05 — Applications</div>
-      <h2 class="slide-title" style="color:var(--white)">Six agent types. Real hospital use cases.</h2>
+      <div class="brand-corner">
+        <div class="brand-badge">B</div>
+        <span class="brand-label">Impulse Healthcare · Bayes Impact</span>
+      </div>
+      <p class="eyebrow">04 — Technical architecture</p>
+      <h2 class="title">Built for healthcare. <em class="hl">Designed for trust.</em></h2>
       <div class="divider"></div>
-      <div class="usecases-grid">
-        <div class="usecase-card">
-          <div class="uc-num">01</div>
-          <div class="uc-icon-label">
-            <div class="uc-icon">🥗</div>
-            <div>
-              <div class="uc-type">Clinical data interpretation &amp; personalised insights</div>
-              <h4>Physical activity prescription agent</h4>
-            </div>
-          </div>
-          <div class="uc-example">→ <span>Nutrition</span> — agent identifying the most appropriate physical activity prescription based on the patient's clinical condition</div>
-        </div>
-        <div class="usecase-card">
-          <div class="uc-num">02</div>
-          <div class="uc-icon-label">
-            <div class="uc-icon">📋</div>
-            <div>
-              <div class="uc-type">Clinical protocol support</div>
-              <h4>Protocol navigation assistant</h4>
-            </div>
-          </div>
-          <div class="uc-example">→ <span>Emergency department</span> — chatbot helping clinicians identify the right protocol and guiding them step by step through its requirements</div>
-        </div>
-        <div class="usecase-card">
-          <div class="uc-num">03</div>
-          <div class="uc-icon-label">
-            <div class="uc-icon">🔬</div>
-            <div>
-              <div class="uc-type">Clinical research support</div>
-              <h4>Systematic review screening agent</h4>
-            </div>
-          </div>
-          <div class="uc-example">→ <span>Clinical epidemiology</span> — AI agent evaluating the relevance of articles for systematic reviews by analysing titles and abstracts against predefined inclusion/exclusion criteria</div>
-        </div>
-        <div class="usecase-card">
-          <div class="uc-num">04</div>
-          <div class="uc-icon-label">
-            <div class="uc-icon">🥦</div>
-            <div>
-              <div class="uc-type">Patient education &amp; follow-up</div>
-              <h4>Prevention &amp; nutrition chatbot</h4>
-            </div>
-          </div>
-          <div class="uc-example">→ <span>Nutrition</span> — patient prevention chatbot proactively sharing validated nutrition advice and locally relevant recommendations</div>
-        </div>
-        <div class="usecase-card">
-          <div class="uc-num">05</div>
-          <div class="uc-icon-label">
-            <div class="uc-icon">🧠</div>
-            <div>
-              <div class="uc-type">Patient education &amp; follow-up</div>
-              <h4>Mental health orientation agent</h4>
-            </div>
-          </div>
-          <div class="uc-example">→ <span>Psychiatry</span> — conversational chatbot orienting young users towards the psychological or psychiatric support services best suited to their needs</div>
-        </div>
-        <div class="usecase-card">
-          <div class="uc-num">06</div>
-          <div class="uc-icon-label">
-            <div class="uc-icon">🔔</div>
-            <div>
-              <div class="uc-type">Quality &amp; safety monitoring</div>
-              <h4>Adverse event declaration assistant</h4>
-            </div>
-          </div>
-          <div class="uc-example">→ <span>Quality</span> — chatbot guiding staff through the declaration of adverse events in an ergonomic and exhaustive way, providing a first level of response based on the situation</div>
-        </div>
+      <div class="spec-grid">
+        <div class="spec-card"><div class="spec-icon">🔒</div><h4>Sovereign &amp; open-source</h4><p>Hosted on EU servers, HDS-certified. No data sent to third-party AI providers for training. Full code transparency.</p></div>
+        <div class="spec-card"><div class="spec-icon">🔍</div><h4>RAG architecture</h4><p>Retrieval-Augmented Generation — the agent answers from your institution's document base, not generic internet knowledge.</p></div>
+        <div class="spec-card"><div class="spec-icon">🤖</div><h4>Multi-agent support</h4><p>Conversational RAG agents, structured data extraction, questionnaire agents, eligibility agents — all on one platform.</p></div>
+        <div class="spec-card"><div class="spec-icon">🖱️</div><h4>No-code configuration</h4><p>System prompt in plain language. Document import via drag-and-drop. No technical skills required from clinical teams.</p></div>
+        <div class="spec-card"><div class="spec-icon">📊</div><h4>Built-in eval framework</h4><p>Golden dataset testing, scoring by dimension (accuracy, completeness, format, tone), full iteration history.</p></div>
+        <div class="spec-card"><div class="spec-icon">🌐</div><h4>Open-source publishing</h4><p>Documentation templates, licence management, structured reuse pipeline — every agent can become a digital common.</p></div>
+        <div class="spec-card"><div class="spec-icon">🛡️</div><h4>GDPR &amp; AI Act compliant</h4><p>Low-risk classification. No personal data in standard scope. Immediate session data deletion. Full audit trail.</p></div>
+        <div class="spec-card"><div class="spec-icon">⚡</div><h4>Rapid deployment</h4><p>Functional prototype in under 6 weeks. Designed for iterative improvement without engineering dependencies.</p></div>
       </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════
-       SLIDE 7 — MATURITY SCALE
-  ══════════════════════════════════════ -->
-  <div class="slide" id="slide-7">
+  <!-- SLIDE 6 — USE CASES -->
+  <div class="slide s-dark" id="slide-6">
     <div class="slide-inner">
-      <div class="slide-tag">06 — Technical architecture · Charité collaboration</div>
-      <h2 class="slide-title" style="color:var(--white)">How the conversational analytics agent works</h2>
+      <div class="brand-corner">
+        <div class="brand-badge">B</div>
+        <span class="brand-label">Impulse Healthcare · Bayes Impact</span>
+      </div>
+      <p class="eyebrow">05 — Applications</p>
+      <h2 class="title">Six agent types. <em class="hl">Real hospital use cases.</em></h2>
       <div class="divider"></div>
+      <div class="uc-grid">
+        <div class="uc-card"><div class="uc-num">01</div><div style="display:flex;align-items:center;gap:10px"><div class="uc-icon">🥗</div><div><div class="uc-type">Clinical data interpretation &amp; personalised insights</div><h4>Physical activity prescription agent</h4></div></div><div class="uc-example">→ <span>Nutrition</span> — agent identifying the most appropriate physical activity prescription based on the patient's clinical condition</div></div>
+        <div class="uc-card"><div class="uc-num">02</div><div style="display:flex;align-items:center;gap:10px"><div class="uc-icon">📋</div><div><div class="uc-type">Clinical protocol support</div><h4>Protocol navigation assistant</h4></div></div><div class="uc-example">→ <span>Emergency department</span> — chatbot helping clinicians identify the right protocol and guiding them step by step through its requirements</div></div>
+        <div class="uc-card"><div class="uc-num">03</div><div style="display:flex;align-items:center;gap:10px"><div class="uc-icon">🔬</div><div><div class="uc-type">Clinical research support</div><h4>Systematic review screening agent</h4></div></div><div class="uc-example">→ <span>Clinical epidemiology</span> — AI agent evaluating the relevance of articles for systematic reviews against predefined inclusion/exclusion criteria</div></div>
+        <div class="uc-card"><div class="uc-num">04</div><div style="display:flex;align-items:center;gap:10px"><div class="uc-icon">🥦</div><div><div class="uc-type">Patient education &amp; follow-up</div><h4>Prevention &amp; nutrition chatbot</h4></div></div><div class="uc-example">→ <span>Nutrition</span> — patient prevention chatbot proactively sharing validated nutrition advice and locally relevant recommendations</div></div>
+        <div class="uc-card"><div class="uc-num">05</div><div style="display:flex;align-items:center;gap:10px"><div class="uc-icon">🧠</div><div><div class="uc-type">Patient education &amp; follow-up</div><h4>Mental health orientation agent</h4></div></div><div class="uc-example">→ <span>Psychiatry</span> — conversational chatbot orienting young users towards the psychological or psychiatric support services best suited to their needs</div></div>
+        <div class="uc-card"><div class="uc-num">06</div><div style="display:flex;align-items:center;gap:10px"><div class="uc-icon">🔔</div><div><div class="uc-type">Quality &amp; safety monitoring</div><h4>Adverse event declaration assistant</h4></div></div><div class="uc-example">→ <span>Quality</span> — chatbot guiding staff through the declaration of adverse events in an ergonomic and exhaustive way, providing a first level of response</div></div>
+      </div>
+    </div>
+  </div>
 
-      <!-- Architecture diagram -->
+  <!-- SLIDE 7 — ARCHITECTURE CHARITE -->
+  <div class="slide s-dark" id="slide-7">
+    <div class="slide-inner">
+      <div class="brand-corner">
+        <div class="brand-badge">B</div>
+        <span class="brand-label">Impulse Healthcare · Bayes Impact</span>
+      </div>
+      <p class="eyebrow">06 — Technical architecture · Charité collaboration</p>
+      <h2 class="title" style="font-size:clamp(18px,2.2vw,28px)">How the conversational analytics agent works</h2>
+      <div class="divider"></div>
       <div class="arch-diagram">
-        <!-- Wearables -->
         <div class="arch-group">
           <div class="arch-device"><span class="dev-icon">⌚</span>Google Pixel Watch</div>
           <div class="arch-device"><span class="dev-icon">🩺</span>Corsano Cardiowatch</div>
           <div class="arch-device"><span class="dev-icon">⌚</span>Apple Watch</div>
         </div>
         <div class="arch-arrow"><span>→</span><small>Pub/Sub, vendor API, companion app</small></div>
-        <!-- Preprocessing -->
-        <div class="arch-box">
-          <div class="arch-box-icon">⚙️</div>
-          <h4>Preprocessing &amp;<br>Common data model</h4>
-          <p>HL7 FHIR normalisation,<br>schema harmonisation</p>
-        </div>
+        <div class="arch-box"><div class="arch-box-icon">⚙️</div><h4>Preprocessing &amp;<br>Common data model</h4><p>HL7 FHIR normalisation,<br>schema harmonisation</p></div>
         <div class="arch-arrow"><span>→</span><small>Structured time-series</small></div>
-        <!-- InfluxDB -->
-        <div class="arch-box">
-          <div class="arch-box-icon">🗄️</div>
-          <h4>InfluxDB</h4>
-          <p>HR, HRV, steps,<br>sleep, energy…</p>
-        </div>
+        <div class="arch-box"><div class="arch-box-icon">🗄️</div><h4>InfluxDB</h4><p>HR, HRV, steps,<br>sleep, energy…</p></div>
         <div class="arch-arrow"><span>→</span><small>Flux query via API</small></div>
-        <!-- Bayes Agent -->
-        <div class="arch-box highlight">
-          <div class="arch-box-icon">🤖</div>
-          <h4>Bayes Platform<br>Analytics Agent</h4>
-          <p>LLM + function calling +<br>controlled output generation</p>
-        </div>
+        <div class="arch-box highlight"><div class="arch-box-icon">🤖</div><h4>Bayes Platform<br>Analytics Agent</h4><p>LLM + function calling +<br>controlled output generation</p></div>
         <div class="arch-arrow"><span>→</span><small>Formatted response</small></div>
-        <!-- User -->
-        <div class="arch-box">
-          <div class="arch-box-icon">👩‍⚕️</div>
-          <h4>Clinician /<br>Researcher</h4>
-          <p>Plain language,<br>no SQL required</p>
-        </div>
+        <div class="arch-box"><div class="arch-box-icon">👩‍⚕️</div><h4>Clinician /<br>Researcher</h4><p>Plain language,<br>no SQL required</p></div>
         <div class="arch-arrow"><span>↔</span><small>API to EHR,<br>clinical studies</small></div>
-        <!-- EHR -->
-        <div class="arch-box">
-          <div class="arch-box-icon">🏥</div>
-          <h4>EHR &amp; Clinical<br>systems</h4>
-          <p>OpenAPI integration,<br>bidirectional</p>
-        </div>
+        <div class="arch-box"><div class="arch-box-icon">🏥</div><h4>EHR &amp; Clinical<br>systems</h4><p>OpenAPI integration,<br>bidirectional</p></div>
       </div>
-
-      <!-- 6-step pipeline -->
       <div class="pipeline-steps">
-        <div class="pip-step">
-          <div class="pip-num">01</div>
-          <div class="pip-label">Understand intent</div>
-          <div class="pip-desc">Plain language question parsed by LLM</div>
-        </div>
-        <div class="pip-step">
-          <div class="pip-num">02</div>
-          <div class="pip-label">Controlled vocabulary</div>
-          <div class="pip-desc">Mapped to schema & controlled syntax</div>
-        </div>
-        <div class="pip-step">
-          <div class="pip-num">03</div>
-          <div class="pip-label">Executable query</div>
-          <div class="pip-desc">Translated to Flux / InfluxDB query</div>
-        </div>
-        <div class="pip-step">
-          <div class="pip-num">04</div>
-          <div class="pip-label">Execute</div>
-          <div class="pip-desc">Run against InfluxDB instance at Charité</div>
-        </div>
-        <div class="pip-step">
-          <div class="pip-num">05</div>
-          <div class="pip-label">Format response</div>
-          <div class="pip-desc">Text, table or chart — auto-selected</div>
-        </div>
-        <div class="pip-step">
-          <div class="pip-num">06</div>
-          <div class="pip-label">Explain reasoning</div>
-          <div class="pip-desc">Query surfaced in plain language for trust & audit</div>
-        </div>
+        <div class="pip-step"><div class="pip-num">01</div><div class="pip-label">Understand intent</div><div class="pip-desc">Plain language parsed by LLM</div></div>
+        <div class="pip-step"><div class="pip-num">02</div><div class="pip-label">Controlled vocabulary</div><div class="pip-desc">Mapped to schema &amp; controlled syntax</div></div>
+        <div class="pip-step"><div class="pip-num">03</div><div class="pip-label">Executable query</div><div class="pip-desc">Translated to Flux / InfluxDB</div></div>
+        <div class="pip-step"><div class="pip-num">04</div><div class="pip-label">Execute</div><div class="pip-desc">Run against Charité InfluxDB</div></div>
+        <div class="pip-step"><div class="pip-num">05</div><div class="pip-label">Format response</div><div class="pip-desc">Text, table or chart — auto-selected</div></div>
+        <div class="pip-step"><div class="pip-num">06</div><div class="pip-label">Explain reasoning</div><div class="pip-desc">Query surfaced for trust &amp; audit</div></div>
       </div>
-
-      <!-- Tech stack -->
       <div class="tech-badges">
-        <span style="font-size:10px;color:rgba(255,255,255,0.25);margin-right:4px">Open-source stack:</span>
+        <span style="font-size:10px;color:rgba(255,255,255,0.22);margin-right:4px">Open-source stack:</span>
         <span class="tech-badge accent">InfluxDB</span>
         <span class="tech-badge">Kafka</span>
         <span class="tech-badge">HL7 FHIR</span>
         <span class="tech-badge">Kubernetes</span>
         <span class="tech-badge">Grafana</span>
         <span class="tech-badge">OpenAPI</span>
-        <span style="margin-left:auto;font-size:9px;color:rgba(255,255,255,0.2)">CNCF-compliant stack · cloud-native</span>
       </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════
-       SLIDE 10 — LIVE DEMO
-  ══════════════════════════════════════ -->
-  <div class="slide" id="slide-8">
-    <div class="slide-inner">
-      <div class="slide-tag">07 — Live demo · Charité · 7-day real dataset</div>
-      <h2 class="slide-title" style="font-size:clamp(18px,2.2vw,26px)">Conversational analytics — ask anything, in plain language</h2>
-      <div class="demo-intro" style="margin-bottom:10px">
-        <p>Data source: <strong>Charité wearables cohort</strong> · InfluxDB · Last 7 days (16–22 Feb) · Metrics: HR, HRV, Respiratory Rate, Steps, Energy, Sleep stages</p>
+  <!-- SLIDE 8 — LIVE DEMO -->
+  <div class="slide s-dark" id="slide-8">
+    <div class="slide-inner" style="padding:32px 48px 80px">
+      <div class="brand-corner">
+        <div class="brand-badge">B</div>
+        <span class="brand-label">Impulse Healthcare · Bayes Impact</span>
       </div>
-      <!-- View tabs -->
+      <p class="eyebrow">07 — Live demo · Charité · 7-day real dataset</p>
+      <h2 class="title" style="font-size:clamp(18px,2.2vw,26px);margin-bottom:10px">Conversational analytics — ask anything, in plain language</h2>
+      <div style="background:rgba(130,193,207,0.07);border:1px solid rgba(130,193,207,0.18);border-radius:10px;padding:10px 16px;margin-bottom:12px;flex-shrink:0">
+        <p style="font-size:clamp(10px,1vw,12px);color:rgba(255,255,255,0.55);line-height:1.5">Data source: <strong style="color:var(--teal)">Charité wearables cohort</strong> · InfluxDB · Last 7 days (16–22 Feb) · Metrics: HR, HRV, Respiratory Rate, Steps, Energy, Sleep stages</p>
+      </div>
       <div class="demo-tabs">
         <button class="demo-tab active" id="tab-patient" onclick="switchTab('patient')">👤 Patient view</button>
         <button class="demo-tab" id="tab-cohort" onclick="switchTab('cohort')">👥 Cohort view</button>
       </div>
-      <div class="demo-split">
-
-        <!-- Left: chat -->
+      <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:14px;flex:1;min-height:0">
         <div class="live-chat">
-          <div class="live-chat-header">
-            <div class="agent-dot"></div>
-            <span>Wearables Analytics Agent</span>
-            <small>Charité · InfluxDB · Bayes Platform</small>
-          </div>
-          <div class="live-messages" id="live-messages">
-            <div class="live-msg agent">Hello. I'm connected to the Charité wearables dataset. Ask me anything about activity, heart rate or sleep patterns — in plain language.</div>
-          </div>
+          <div class="live-chat-header"><div class="agent-dot"></div><span>Wearables Analytics Agent</span><small>Charité · InfluxDB · Bayes Platform</small></div>
+          <div class="live-messages" id="live-messages"><div class="live-msg agent">Hello. I'm connected to the Charité wearables dataset. Ask me anything about activity, heart rate or sleep patterns — in plain language.</div></div>
           <div class="example-btns" id="example-btns-patient">
             <button class="example-btn" onclick="triggerDemo(0)">💡 "How did this patient's resting heart rate evolve over the last 7 days?"</button>
             <button class="example-btn" onclick="triggerDemo(1)">💡 "What was the HRV trend for this patient this week?"</button>
@@ -2341,158 +708,111 @@
             <button class="live-send" onclick="sendCustom()">↑</button>
           </div>
         </div>
-
-        <!-- Right: response panels -->
         <div class="live-response" id="live-response">
-          <div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.15);font-size:13px;text-align:center;padding:20px">
-            Click an example or type a question<br>to see the agent reasoning in real time
-          </div>
+          <div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.14);font-size:13px;text-align:center;padding:20px">Click an example or type a question<br>to see the agent reasoning in real time</div>
         </div>
-
       </div>
-      <div class="key-msg">
-        "Any clinician or researcher can now query complex multimodal health data in plain language — no SQL, no technical training required. Every answer is transparent, traceable, and auditable."
-      </div>
+      <div id="slide-8" style="display:none"></div>
+      <div class="key-msg" style="margin-top:12px;padding:10px 16px;background:rgba(130,193,207,0.07);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;font-size:11px;color:rgba(255,255,255,0.55);font-style:italic;line-height:1.5;flex-shrink:0">"Any clinician or researcher can now query complex multimodal health data in plain language — no SQL, no technical training required. Every answer is transparent, traceable, and auditable."</div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════
-       SLIDE 9 — PROJECT ORGANISATION
-  ══════════════════════════════════════ -->
+  <!-- SLIDE 9 — PROJECT ORG -->
   <div class="slide" id="slide-9">
-    <div class="slide-inner" style="padding:44px 72px 80px;gap:0">
-      <div class="slide-tag">08 — Project organisation · Charité × Bayes Impact</div>
-      <h2 class="slide-title" style="color:var(--white);margin-bottom:18px">How we work together</h2>
-      <div class="divider" style="margin:0 0 24px"></div>
-
-      <!-- Top row: Budget (dominant) + Team -->
-      <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:16px">
-
-        <!-- Budget -->
-        <div style="background:rgba(130,193,207,0.08);border:1.5px solid rgba(130,193,207,0.35);border-radius:18px;padding:28px 32px;display:flex;flex-direction:column;gap:16px">
+    <div class="slide-inner" style="background:var(--bg);color:var(--ink);padding:44px 88px 88px;gap:0">
+      <div class="brand-corner"><div class="brand-badge" style="background:var(--blue)">B</div><span class="brand-label" style="color:var(--muted)">Impulse Healthcare · Bayes Impact</span></div>
+      <p class="eyebrow" style="color:var(--blue)">08 — Project organisation · Charité × Bayes Impact</p>
+      <h2 class="title" style="margin-bottom:18px">How we work together</h2>
+      <div class="divider"></div>
+      <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-bottom:18px">
+        <div style="background:var(--card);border:1.5px solid rgba(16,103,254,0.25);border-radius:18px;padding:30px 34px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow-lg)">
           <div style="display:flex;align-items:center;gap:12px">
-            <div style="width:46px;height:46px;border-radius:12px;background:rgba(130,193,207,0.2);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">💚</div>
-            <div style="font-size:18px;font-weight:800;color:var(--white)">Budget — fully pro bono</div>
+            <div style="width:46px;height:46px;border-radius:12px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">💚</div>
+            <div style="font-size:19px;font-weight:800;color:var(--ink)">Budget — fully pro bono</div>
           </div>
-          <p style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.65">Bayes Impact is a nonprofit funded through philanthropic partners. We do not charge for our support or platform use. Pro bono deployment support within Charité's infrastructure is available if needed.</p>
-          <div style="background:rgba(130,193,207,0.1);border-left:4px solid var(--teal);border-radius:0 10px 10px 0;padding:14px 18px">
-            <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:5px">🔓 Open-source — free forever, no lock-in</div>
-            <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6">Both the platform and the AI solution will be made freely available to Charité. The free access is <strong style="color:var(--teal)">permanent</strong> — no dependency on Bayes Impact. Charité can install the platform on its own servers at any time and operate it fully independently.</p>
+          <p style="font-size:14px;color:var(--ink-soft);line-height:1.65">Bayes Impact is a nonprofit funded through philanthropic partners. We do not charge for our support or platform use. Pro bono deployment support within Charité's infrastructure is available if needed.</p>
+          <div style="background:var(--blue-soft);border-left:4px solid var(--blue);border-radius:0 10px 10px 0;padding:14px 18px">
+            <div style="font-size:15px;font-weight:800;color:var(--ink);margin-bottom:5px">🔓 Open-source — free forever, no lock-in</div>
+            <p style="font-size:13px;color:var(--ink-soft);line-height:1.6">Both the platform and the AI solution will be made freely available to Charité. The free access is <strong style="color:var(--blue)">permanent</strong> — no dependency on Bayes Impact. Charité can install the platform on its own servers at any time and operate it fully independently.</p>
           </div>
         </div>
-
-        <!-- Team -->
-        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:28px;display:flex;flex-direction:column;gap:14px">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:30px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)">
           <div style="display:flex;align-items:center;gap:12px">
-            <div style="width:46px;height:46px;border-radius:12px;background:rgba(130,193,207,0.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">👥</div>
-            <div style="font-size:18px;font-weight:800;color:var(--white)">Team</div>
+            <div style="width:46px;height:46px;border-radius:12px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">👥</div>
+            <div style="font-size:19px;font-weight:800;color:var(--ink)">Team</div>
           </div>
-          <p style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.65">Multidisciplinary team from Bayes Impact — AI engineers, developers, project and methodological leads. Primarily France-based, available for in-person sessions in Berlin whenever needed.</p>
+          <p style="font-size:14px;color:var(--ink-soft);line-height:1.65">Multidisciplinary team from Bayes Impact — AI engineers, developers, project and methodological leads. Primarily France-based, available for in-person sessions in Berlin whenever needed.</p>
         </div>
       </div>
-
-      <!-- Bottom row: Calendar + Legal + Governance -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
-
-        <!-- Calendar -->
-        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:22px 24px;display:flex;flex-direction:column;gap:12px">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:40px;height:40px;border-radius:10px;background:rgba(130,193,207,0.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📅</div>
-            <div style="font-size:16px;font-weight:800;color:var(--white)">Calendar</div>
-          </div>
-          <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6">Start: <strong style="color:var(--white)">Summer 2026</strong><br>Pilot: <strong style="color:var(--white)">2–3 months</strong></p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)">
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:40px;height:40px;border-radius:10px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📅</div><div style="font-size:17px;font-weight:800;color:var(--ink)">Calendar</div></div>
+          <p style="font-size:13px;color:var(--ink-soft);line-height:1.6">Start: <strong>Summer 2026</strong><br>Pilot: <strong>2–3 months</strong></p>
           <div style="display:flex;flex-direction:column;gap:7px">
-            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.55)"><span style="width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0"></span>Mid-point check-in — early Sept.</div>
-            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.55)"><span style="width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0"></span>Final joint review — early Oct.</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft)"><span style="width:8px;height:8px;border-radius:50%;background:var(--blue);flex-shrink:0"></span>Mid-point check-in — early September</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft)"><span style="width:8px;height:8px;border-radius:50%;background:var(--blue);flex-shrink:0"></span>Final joint review — early October</div>
           </div>
         </div>
-
-        <!-- Legal -->
-        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:22px 24px;display:flex;flex-direction:column;gap:12px">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:40px;height:40px;border-radius:10px;background:rgba(130,193,207,0.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📝</div>
-            <div style="font-size:16px;font-weight:800;color:var(--white)">Legal framework</div>
-          </div>
-          <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6">A dedicated partnership agreement may be drafted. The existing <strong style="color:rgba(255,255,255,0.8)">Charité × AP-HP</strong> framework established in France can serve as a basis for structuring the German collaboration.</p>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)">
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:40px;height:40px;border-radius:10px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📝</div><div style="font-size:17px;font-weight:800;color:var(--ink)">Legal framework</div></div>
+          <p style="font-size:13px;color:var(--ink-soft);line-height:1.6">A dedicated partnership agreement may be drafted. The existing <strong>Charité × AP-HP</strong> framework established in France can serve as a basis for structuring the German collaboration.</p>
         </div>
-
-        <!-- Governance -->
-        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:22px 24px;display:flex;flex-direction:column;gap:12px">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:40px;height:40px;border-radius:10px;background:rgba(130,193,207,0.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🧭</div>
-            <div style="font-size:16px;font-weight:800;color:var(--white)">Governance</div>
-          </div>
-          <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6">Joint <strong style="color:rgba(255,255,255,0.8)">Charité × Bayes Impact</strong> steering committee — intentionally lean to maintain agility. Members to be defined jointly.</p>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)">
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:40px;height:40px;border-radius:10px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🧭</div><div style="font-size:17px;font-weight:800;color:var(--ink)">Governance</div></div>
+          <p style="font-size:13px;color:var(--ink-soft);line-height:1.6">Joint <strong>Charité × Bayes Impact</strong> steering committee — intentionally lean to maintain agility. Members to be defined jointly.</p>
         </div>
       </div>
     </div>
   </div>
 
-    <!-- ══════════════════════════════════════
-       SLIDE 10 — CTA
-  ══════════════════════════════════════ -->
-  <div class="slide" id="slide-10">
-    <div class="cta-bg"></div>
-    <div class="slide-inner">
-      <div class="slide-tag">09 — What we can build together</div>
-      <h1 class="slide-title">Three ways to <span>get started</span></h1>
-      <p class="cta-sub">From a focused research sprint to a full institutional deployment — choose the path that fits your context.</p>
-      <div class="cta-cards" style="max-width:900px;gap:16px">
-
-        <!-- Option 1: Wearables -->
-        <div class="cta-card" style="border-color:rgba(130,193,207,0.3);background:rgba(130,193,207,0.06);position:relative;overflow:hidden">
-          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal)"></div>
-          <div class="cta-for" style="color:var(--teal)">Focused research collaboration</div>
+  <!-- SLIDE 10 — CTA -->
+  <div class="slide s-cover" id="slide-10">
+    <div class="slide-inner" style="align-items:center;justify-content:center;text-align:center;gap:28px;padding-bottom:100px">
+      <div class="brand-corner">
+        <div class="brand-badge">B</div>
+        <span class="brand-label">Impulse Healthcare · Bayes Impact</span>
+      </div>
+      <p class="eyebrow">09 — What we can build together</p>
+      <h1 class="big" style="color:#fff">Three ways to <em class="hl">get started</em></h1>
+      <p class="lead" style="max-width:540px">From a focused research sprint to a full institutional deployment — choose the path that fits your context.</p>
+      <div style="display:flex;gap:18px;justify-content:center;width:100%;max-width:920px">
+        <div class="cta-card featured">
+          <div class="cta-for">Focused research collaboration</div>
           <h4>Wearables conversational analytics — Charité</h4>
-          <p style="color:rgba(255,255,255,0.6)">Build and deploy the natural language interface on top of Charité's multimodal wearables dataset — from data schema mapping to production agent — in a dedicated 3–4 month sprint with the Bayes Impact team.</p>
-          <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+          <p>Build and deploy the natural language interface on top of Charité's multimodal wearables dataset — from data schema mapping to production agent — in a dedicated 3–4 month sprint with the Bayes Impact team.</p>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:auto">
             <span class="pill pill-teal" style="font-size:9px">InfluxDB · Kafka · HL7 FHIR</span>
-            <span class="pill pill-teal" style="font-size:9px">HR · HRV · Steps · Sleep · Energy</span>
             <span class="pill pill-teal" style="font-size:9px">3–4 months</span>
           </div>
-
         </div>
-
-        <!-- Option 2: Impulse programme -->
         <div class="cta-card">
           <div class="cta-for">For medical teams</div>
           <h4>Join the Impulse Healthcare programme</h4>
-          <p style="color:rgba(255,255,255,0.5)">Your clinical teams bring the use cases. We bring the platform, the methodology and the technical support. Together, we build AI agents grounded in your knowledge base — and ready to deploy in your institution.</p>
-          <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
-            <span class="pill pill-white" style="font-size:9px">No coding required</span>
-            <span class="pill pill-white" style="font-size:9px">Clinician-led</span>
+          <p>Your clinical teams bring the use cases. We bring the platform, the methodology and the technical support. Together, we build AI agents grounded in your knowledge base — and ready to deploy in your institution.</p>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:auto">
+            <span class="pill pill-ghost" style="font-size:9px">No coding required</span>
+            <span class="pill pill-ghost" style="font-size:9px">Clinician-led</span>
           </div>
-
         </div>
-
-        <!-- Option 3: Platform deployment -->
         <div class="cta-card">
-          <div class="cta-for">For hospital leadership & IT</div>
+          <div class="cta-for">For hospital leadership &amp; IT</div>
           <h4>Deploy the Bayes Platform</h4>
-          <p style="color:rgba(255,255,255,0.5)">Available on-premise on your own infrastructure, or as a managed cloud instance on EU-certified servers. Includes onboarding, training for clinical teams, and ongoing technical support from Bayes Impact.</p>
-          <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
-            <span class="pill pill-white" style="font-size:9px">On-premise</span>
-            <span class="pill pill-white" style="font-size:9px">Cloud (EU HDS)</span>
-            <span class="pill pill-white" style="font-size:9px">Open-source</span>
+          <p>Available on-premise on your own infrastructure, or as a managed cloud instance on EU-certified servers. Includes onboarding, training for clinical teams, and ongoing technical support.</p>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:auto">
+            <span class="pill pill-ghost" style="font-size:9px">On-premise</span>
+            <span class="pill pill-ghost" style="font-size:9px">Cloud (EU HDS)</span>
           </div>
-
         </div>
-
       </div>
-      <div class="contact-block">
-        <p>
-          <strong>Carine Sit</strong> — Program Director, Bayes Impact<br>
-          <a href="mailto:carine.sit@bayesimpact.org">carine.sit@bayesimpact.org</a>
-          &nbsp;·&nbsp;
-          <a href="https://www.impulse.healthcare/en" target="_blank">impulse.healthcare</a>
-        </p>
+      <div class="contact-block" style="width:100%;max-width:920px">
+        <p><strong>Carine Sit</strong> — Program Director, Bayes Impact<br><a href="mailto:carine.sit@bayesimpact.org">carine.sit@bayesimpact.org</a> &nbsp;·&nbsp; <a href="https://www.impulse.healthcare/en" target="_blank">impulse.healthcare</a></p>
       </div>
     </div>
   </div>
 
-</div><!-- /deck -->
+</div>
 
-<!-- ── SOURCE MODAL ── -->
+<!-- SOURCE MODAL -->
 <div id="src-modal" onclick="closeSrcModal(event)">
   <div id="src-modal-box">
     <div id="src-modal-header">
@@ -2503,7 +823,7 @@
   </div>
 </div>
 
-<!-- ── NAVIGATION ── -->
+<!-- NAVIGATION -->
 <div id="nav">
   <button id="btn-prev" onclick="navigate(-1)" title="Previous">←</button>
   <div id="dots"></div>
@@ -2517,6 +837,7 @@
 </div>
 
 <script>
+
 /* ── SLIDE ENGINE ── */
 const TOTAL = 10;
 let current = 1;
@@ -3445,6 +1766,7 @@ function closeSrcModal(e) {
     document.getElementById('src-modal').classList.remove('open');
   }
 }
+
 
 </script>
 </body>
