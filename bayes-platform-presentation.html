@@ -656,15 +656,23 @@
     justify-content: center;
   }
   .spec-card h4 {
-    font-size: clamp(11px, 1vw, 13px);
-    font-weight: 700;
+    font-size: clamp(13px, 1.2vw, 16px);
+    font-weight: 800;
     color: var(--black);
-    line-height: 1.3;
+    line-height: 1.25;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(130,193,207,0.3);
+    margin-bottom: 2px;
   }
   .spec-card p {
-    font-size: clamp(10px, 0.9vw, 12px);
+    font-size: clamp(11px, 1vw, 13px);
     color: var(--mid);
-    line-height: 1.5;
+    line-height: 1.6;
+  }
+  .spec-icon {
+    font-size: 26px;
+    width: 46px;
+    height: 46px;
   }
 
   /* ═══════════════════════════════
@@ -1242,34 +1250,36 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: 28px;
+    margin-top: 24px;
     gap: 0;
-    flex-shrink: 0;
+    flex: 1.8;
+    min-height: 0;
   }
   .arch-group {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
   .arch-device {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 10px;
-    padding: 8px 12px;
-    font-size: 11px;
-    color: rgba(255,255,255,0.7);
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.8);
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
     white-space: nowrap;
   }
-  .arch-device .dev-icon { font-size: 16px; }
+  .arch-device .dev-icon { font-size: 20px; }
   .arch-box {
     background: rgba(130,193,207,0.08);
     border: 1px solid rgba(130,193,207,0.25);
-    border-radius: 14px;
-    padding: 16px 20px;
+    border-radius: 16px;
+    padding: 20px 22px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -1277,39 +1287,39 @@
     gap: 8px;
   }
   .arch-box.highlight {
-    background: rgba(130,193,207,0.14);
-    border-color: rgba(130,193,207,0.45);
-    box-shadow: 0 0 20px rgba(130,193,207,0.1);
+    background: rgba(130,193,207,0.16);
+    border-color: rgba(130,193,207,0.55);
+    box-shadow: 0 0 28px rgba(130,193,207,0.15);
   }
-  .arch-box-icon { font-size: 24px; }
-  .arch-box h4 { font-size: clamp(11px,1.1vw,13px); font-weight:700; color:var(--white); }
-  .arch-box p { font-size: clamp(9px,0.85vw,11px); color:rgba(255,255,255,0.45); line-height:1.4; }
+  .arch-box-icon { font-size: 30px; }
+  .arch-box h4 { font-size: clamp(13px,1.2vw,15px); font-weight:800; color:var(--white); line-height:1.3; }
+  .arch-box p { font-size: clamp(11px,1vw,12px); color:rgba(255,255,255,0.55); line-height:1.5; }
   .arch-arrow {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
-    padding: 0 6px;
+    gap: 4px;
+    padding: 0 8px;
     flex-shrink: 0;
   }
-  .arch-arrow span { font-size: 18px; color: rgba(130,193,207,0.5); }
-  .arch-arrow small { font-size: 9px; color: rgba(255,255,255,0.25); text-align:center; max-width:70px; line-height:1.3; }
+  .arch-arrow span { font-size: 22px; color: rgba(130,193,207,0.6); }
+  .arch-arrow small { font-size: 10px; color: rgba(255,255,255,0.3); text-align:center; max-width:80px; line-height:1.4; }
   .pipeline-steps {
     display: flex;
     gap: 0;
-    margin-top: 20px;
+    margin-top: 16px;
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 14px;
+    border-radius: 12px;
     overflow: hidden;
     flex-shrink: 0;
   }
   .pip-step {
     flex: 1;
-    padding: 14px 12px;
+    padding: 12px 12px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
     border-right: 1px solid rgba(255,255,255,0.06);
     position: relative;
   }
@@ -1326,8 +1336,8 @@
   }
   .pip-step:last-child::after { display: none; }
   .pip-num { font-size: 9px; font-weight:700; color:var(--teal); letter-spacing:0.1em; }
-  .pip-label { font-size: clamp(10px,0.95vw,12px); font-weight:700; color:var(--white); line-height:1.3; }
-  .pip-desc { font-size: clamp(9px,0.85vw,10px); color:rgba(255,255,255,0.4); line-height:1.4; }
+  .pip-label { font-size: clamp(11px,1vw,13px); font-weight:700; color:var(--white); line-height:1.3; }
+  .pip-desc { font-size: clamp(10px,0.9vw,11px); color:rgba(255,255,255,0.4); line-height:1.4; }
   .tech-badges {
     display: flex;
     gap: 8px;
@@ -1785,10 +1795,10 @@
         <div style="display:flex;flex-direction:column;gap:10px;min-height:0">
           <!-- Header -->
           <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 14px 12px;flex-shrink:0">
-            <div style="font-size:9px;font-weight:700;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">Step 01</div>
-            <div style="font-size:22px;margin-bottom:8px">📂</div>
-            <div style="font-size:12px;font-weight:700;color:var(--white);margin-bottom:5px">Import document base</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.4);line-height:1.5">Upload protocols, patient leaflets, FAQs and clinical guidelines via drag-and-drop</div>
+            <div style="font-size:11px;font-weight:700;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">Step 01</div>
+            <div style="font-size:28px;margin-bottom:10px">📂</div>
+            <div style="font-size:15px;font-weight:800;color:var(--white);margin-bottom:6px">Import document base</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5">Upload protocols, patient leaflets, FAQs and clinical guidelines via drag-and-drop</div>
           </div>
           <!-- Illustration: document upload UI -->
           <div style="background:#161b22;border:1px solid rgba(130,193,207,0.18);border-radius:12px;overflow:hidden;flex:1;display:flex;flex-direction:column">
@@ -1840,10 +1850,10 @@
         <!-- ══ STEP 02 ══ -->
         <div style="display:flex;flex-direction:column;gap:10px;min-height:0">
           <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 14px 12px;flex-shrink:0">
-            <div style="font-size:9px;font-weight:700;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">Step 02</div>
-            <div style="font-size:22px;margin-bottom:8px">✍️</div>
-            <div style="font-size:12px;font-weight:700;color:var(--white);margin-bottom:5px">Configure system prompt</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.4);line-height:1.5">Define behaviour, tone, scope and safety limits in plain language — no coding required</div>
+            <div style="font-size:11px;font-weight:700;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">Step 02</div>
+            <div style="font-size:28px;margin-bottom:10px">✍️</div>
+            <div style="font-size:15px;font-weight:800;color:var(--white);margin-bottom:6px">Configure system prompt</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5">Define behaviour, tone, scope and safety limits in plain language — no coding required</div>
           </div>
           <!-- Illustration: prompt editor -->
           <div style="background:#161b22;border:1px solid rgba(130,193,207,0.18);border-radius:12px;overflow:hidden;flex:1;display:flex;flex-direction:column">
@@ -1881,10 +1891,10 @@
         <!-- ══ STEP 03 ══ -->
         <div style="display:flex;flex-direction:column;gap:10px;min-height:0">
           <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 14px 12px;flex-shrink:0">
-            <div style="font-size:9px;font-weight:700;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">Step 03</div>
-            <div style="font-size:22px;margin-bottom:8px">🧪</div>
-            <div style="font-size:12px;font-weight:700;color:var(--white);margin-bottom:5px">Test &amp; iterate</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.4);line-height:1.5">Golden dataset, scoring by dimension, iteration tracking — built in</div>
+            <div style="font-size:11px;font-weight:700;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">Step 03</div>
+            <div style="font-size:28px;margin-bottom:10px">🧪</div>
+            <div style="font-size:15px;font-weight:800;color:var(--white);margin-bottom:6px">Test &amp; iterate</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5">Golden dataset, scoring by dimension, iteration tracking — built in</div>
           </div>
           <!-- Illustration: eval dashboard -->
           <div style="background:#161b22;border:1px solid rgba(130,193,207,0.18);border-radius:12px;overflow:hidden;flex:1;display:flex;flex-direction:column">
@@ -1938,10 +1948,10 @@
         <!-- ══ STEP 04 ══ -->
         <div style="display:flex;flex-direction:column;gap:10px;min-height:0">
           <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 14px 12px;flex-shrink:0">
-            <div style="font-size:9px;font-weight:700;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">Step 04</div>
-            <div style="font-size:22px;margin-bottom:8px">🚀</div>
-            <div style="font-size:12px;font-weight:700;color:var(--white);margin-bottom:5px">Deploy &amp; monitor</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.4);line-height:1.5">Live monitoring, feedback loops, questions not addressed — all in one dashboard</div>
+            <div style="font-size:11px;font-weight:700;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">Step 04</div>
+            <div style="font-size:28px;margin-bottom:10px">🚀</div>
+            <div style="font-size:15px;font-weight:800;color:var(--white);margin-bottom:6px">Deploy &amp; monitor</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5">Live monitoring, feedback loops, questions not addressed — all in one dashboard</div>
           </div>
           <!-- Illustration: live monitoring -->
           <div style="background:#161b22;border:1px solid rgba(130,193,207,0.18);border-radius:12px;overflow:hidden;flex:1;display:flex;flex-direction:column">
@@ -2350,69 +2360,75 @@
        SLIDE 9 — PROJECT ORGANISATION
   ══════════════════════════════════════ -->
   <div class="slide" id="slide-9">
-    <div class="slide-inner" style="padding-bottom:80px">
+    <div class="slide-inner" style="padding:44px 72px 80px;gap:0">
       <div class="slide-tag">08 — Project organisation · Charité × Bayes Impact</div>
-      <h2 class="slide-title" style="color:var(--white)">How we work together</h2>
-      <div class="divider"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:14px;flex:1;min-height:0">
+      <h2 class="slide-title" style="color:var(--white);margin-bottom:18px">How we work together</h2>
+      <div class="divider" style="margin:0 0 24px"></div>
 
-        <!-- Team -->
-        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:36px;height:36px;border-radius:10px;background:rgba(130,193,207,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👥</div>
-            <div style="font-size:11px;font-weight:800;color:var(--white);letter-spacing:0.02em">Team</div>
-          </div>
-          <p style="font-size:clamp(10px,0.95vw,12px);color:rgba(255,255,255,0.55);line-height:1.6">Multidisciplinary team from Bayes Impact: AI engineers, developers, project and methodological leads — primarily France-based, available for in-person working sessions in Berlin.</p>
-        </div>
+      <!-- Top row: Budget (dominant) + Team -->
+      <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:16px">
 
         <!-- Budget -->
-        <div style="background:rgba(130,193,207,0.06);border:1px solid rgba(130,193,207,0.2);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px;grid-column:span 2">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:36px;height:36px;border-radius:10px;background:rgba(130,193,207,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">💚</div>
-            <div style="font-size:11px;font-weight:800;color:var(--white);letter-spacing:0.02em">Budget — pro bono</div>
+        <div style="background:rgba(130,193,207,0.08);border:1.5px solid rgba(130,193,207,0.35);border-radius:18px;padding:28px 32px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:46px;height:46px;border-radius:12px;background:rgba(130,193,207,0.2);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">💚</div>
+            <div style="font-size:18px;font-weight:800;color:var(--white)">Budget — fully pro bono</div>
           </div>
-          <p style="font-size:clamp(10px,0.95vw,12px);color:rgba(255,255,255,0.55);line-height:1.6">No financial compensation is associated with this project. Bayes Impact is a nonprofit funded through philanthropic partners and does not charge for its support or platform use. Pro bono deployment support within Charité's infrastructure available if needed.</p>
-          <div style="padding:10px 14px;background:rgba(130,193,207,0.08);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;font-size:clamp(10px,0.9vw,11px);color:rgba(255,255,255,0.65);line-height:1.55">
-            Both the platform and the AI solution will be made freely available to Charité. As everything is <strong style="color:var(--teal)">open-source</strong>, the free access is permanent — with no dependency on Bayes Impact. Charité is free to install the platform on its own servers at any time and operate it fully independently.
+          <p style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.65">Bayes Impact is a nonprofit funded through philanthropic partners. We do not charge for our support or platform use. Pro bono deployment support within Charité's infrastructure is available if needed.</p>
+          <div style="background:rgba(130,193,207,0.1);border-left:4px solid var(--teal);border-radius:0 10px 10px 0;padding:14px 18px">
+            <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:5px">🔓 Open-source — free forever, no lock-in</div>
+            <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6">Both the platform and the AI solution will be made freely available to Charité. The free access is <strong style="color:var(--teal)">permanent</strong> — no dependency on Bayes Impact. Charité can install the platform on its own servers at any time and operate it fully independently.</p>
           </div>
         </div>
 
-        <!-- Calendar -->
-        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:36px;height:36px;border-radius:10px;background:rgba(130,193,207,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">📅</div>
-            <div style="font-size:11px;font-weight:800;color:var(--white);letter-spacing:0.02em">Calendar</div>
+        <!-- Team -->
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:28px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:46px;height:46px;border-radius:12px;background:rgba(130,193,207,0.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">👥</div>
+            <div style="font-size:18px;font-weight:800;color:var(--white)">Team</div>
           </div>
-          <p style="font-size:clamp(10px,0.95vw,12px);color:rgba(255,255,255,0.55);line-height:1.6">Start: <strong style="color:rgba(255,255,255,0.8)">Summer 2026</strong> · Pilot duration: <strong style="color:rgba(255,255,255,0.8)">2–3 months</strong> depending on team availability.</p>
-          <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">
-            <div style="display:flex;align-items:center;gap:8px;font-size:10px;color:rgba(255,255,255,0.5)"><span style="width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0"></span>Mid-point check-in — early September</div>
-            <div style="display:flex;align-items:center;gap:8px;font-size:10px;color:rgba(255,255,255,0.5)"><span style="width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0"></span>Final joint review — early October</div>
+          <p style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.65">Multidisciplinary team from Bayes Impact — AI engineers, developers, project and methodological leads. Primarily France-based, available for in-person sessions in Berlin whenever needed.</p>
+        </div>
+      </div>
+
+      <!-- Bottom row: Calendar + Legal + Governance -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+
+        <!-- Calendar -->
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:22px 24px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(130,193,207,0.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📅</div>
+            <div style="font-size:16px;font-weight:800;color:var(--white)">Calendar</div>
+          </div>
+          <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6">Start: <strong style="color:var(--white)">Summer 2026</strong><br>Pilot: <strong style="color:var(--white)">2–3 months</strong></p>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.55)"><span style="width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0"></span>Mid-point check-in — early Sept.</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.55)"><span style="width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0"></span>Final joint review — early Oct.</div>
           </div>
         </div>
 
         <!-- Legal -->
-        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px">
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:22px 24px;display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:36px;height:36px;border-radius:10px;background:rgba(130,193,207,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">📝</div>
-            <div style="font-size:11px;font-weight:800;color:var(--white);letter-spacing:0.02em">Legal framework</div>
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(130,193,207,0.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📝</div>
+            <div style="font-size:16px;font-weight:800;color:var(--white)">Legal framework</div>
           </div>
-          <p style="font-size:clamp(10px,0.95vw,12px);color:rgba(255,255,255,0.55);line-height:1.6">A dedicated partnership agreement may be drafted. The existing Charité × AP-HP framework established in France can serve as a basis for structuring the German collaboration.</p>
+          <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6">A dedicated partnership agreement may be drafted. The existing <strong style="color:rgba(255,255,255,0.8)">Charité × AP-HP</strong> framework established in France can serve as a basis for structuring the German collaboration.</p>
         </div>
 
         <!-- Governance -->
-        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px">
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:22px 24px;display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:36px;height:36px;border-radius:10px;background:rgba(130,193,207,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🧭</div>
-            <div style="font-size:11px;font-weight:800;color:var(--white);letter-spacing:0.02em">Governance</div>
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(130,193,207,0.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🧭</div>
+            <div style="font-size:16px;font-weight:800;color:var(--white)">Governance</div>
           </div>
-          <p style="font-size:clamp(10px,0.95vw,12px);color:rgba(255,255,255,0.55);line-height:1.6">Joint <strong style="color:rgba(255,255,255,0.75)">Charité × Bayes Impact</strong> steering committee — intentionally lean to maintain agility. Members to be defined jointly. Mandate: track progress, address blockers, key decisions and arbitration.</p>
+          <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6">Joint <strong style="color:rgba(255,255,255,0.8)">Charité × Bayes Impact</strong> steering committee — intentionally lean to maintain agility. Members to be defined jointly.</p>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════
+    <!-- ══════════════════════════════════════
        SLIDE 10 — CTA
   ══════════════════════════════════════ -->
   <div class="slide" id="slide-10">
