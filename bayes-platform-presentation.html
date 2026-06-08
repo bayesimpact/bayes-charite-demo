@@ -1142,96 +1142,157 @@ async function triggerDemo(idx) {
   demoRunning = false;
 }
 
-function renderResult(d, body) {
-  if (d.type === 'metric') {
-    body.innerHTML = `
-      <div class="metric-card">
-        <div>
-          <div class="metric-value">${d.result.value} <span class="metric-unit">${d.result.unit}</span></div>
-          <div class="metric-label">${d.result.label}</div>
-          <div class="metric-range">${d.result.range}</div>
-        </div>
-      </div>`;
-  } else if (d.type === 'line') {
-    const canvasId = 'chart-' + Date.now();
-    body.innerHTML = `<div class="chart-wrap"><canvas id="${canvasId}"></canvas></div>
-      <div class="chart-summary">${d.summary}</div>`;
-    requestAnimationFrame(() => {
-      const ctx = document.getElementById(canvasId);
-      if (!ctx) return;
-      const chart = new Chart(ctx, {
-        type: 'line',
-        data: { labels: d.lineData.labels, datasets: [{ label: d.lineData.unit, data: d.lineData.values, borderColor:'#82C1CF', backgroundColor:'rgba(130,193,207,0.1)', fill:true, tension:0.4, pointBackgroundColor:'#82C1CF', pointRadius:4, borderWidth:2 }] },
-        options: { responsive:true, maintainAspectRatio:false,
-          plugins: { legend:{display:false}, tooltip:{callbacks:{label:c=>c.raw+' '+d.lineData.unit}} },
-          scales: {
-            x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'rgba(255,255,255,0.45)',font:{size:9}}},
-            y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'rgba(255,255,255,0.5)',font:{size:10},callback:v=>v+' '+d.lineData.unit},min:d.lineData.yMin,max:d.lineData.yMax}
-          }
-        }
-      });
-      activeCharts[canvasId] = chart;
-    });
-  } else if (d.type === 'bar') {
-    const canvasId = 'chart-' + Date.now();
-    const labels = d.barLabels || ['Weekdays','Weekends'];
-    const values = d.barValues || [8240,6910];
-    const unit = d.barUnit || 'steps/day';
-    body.innerHTML = `<div class="chart-wrap"><canvas id="${canvasId}"></canvas></div>
-      <div class="chart-summary">${d.summary}</div>`;
-    requestAnimationFrame(() => {
-      const ctx = document.getElementById(canvasId);
-      if (!ctx) return;
-      const chart = new Chart(ctx, {
-        type:'bar',
-        data:{ labels, datasets:[{ data:values, backgroundColor:['rgba(130,193,207,0.75)','rgba(130,193,207,0.35)'], borderColor:['#82C1CF','rgba(130,193,207,0.5)'], borderWidth:2, borderRadius:6 }] },
-        options:{ responsive:true, maintainAspectRatio:false,
-          plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' '+unit}}},
-          scales:{
-            x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'rgba(255,255,255,0.5)',font:{size:11}}},
-            y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'rgba(255,255,255,0.5)',font:{size:10},callback:v=>v+' '+unit}}
-          }
-        }
-      });
-      activeCharts[canvasId] = chart;
-    });
-  } else if (d.type === 'bar-sleep') {
-    const canvasId = 'chart-' + Date.now();
-    body.innerHTML = `<div class="chart-wrap"><canvas id="${canvasId}"></canvas></div>
-      <div class="chart-summary">${d.summary}</div>`;
-    requestAnimationFrame(() => {
-      const ctx = document.getElementById(canvasId);
-      if (!ctx) return;
-      const chart = new Chart(ctx, {
-        type:'bar',
-        data:{ labels: d.barData.labels, datasets:[
+/* ── CHART TYPE SWITCHING ── */
+const CHART_PALETTE = ['rgba(130,193,207,0.8)','rgba(16,103,254,0.7)','rgba(63,185,80,0.7)','rgba(251,191,36,0.7)','rgba(239,68,68,0.6)','rgba(168,85,247,0.6)','rgba(249,115,22,0.6)'];
+const CHART_TYPE_LABELS = { line:'📈 Line', bar:'📊 Bar', pie:'🥧 Pie', doughnut:'🍩 Donut', 'bar-sleep':'📦 Stacked' };
+
+function getAvailableChartTypes(dType) {
+  if (dType === 'line')     return ['line','bar','pie','doughnut'];
+  if (dType === 'bar')      return ['bar','line','pie','doughnut'];
+  if (dType === 'bar-sleep') return ['bar-sleep','bar','line'];
+  return [];
+}
+
+function extractLabelsValues(d) {
+  if (d.lineData)  return { labels: d.lineData.labels, values: d.lineData.values, unit: d.lineData.unit };
+  if (d.barLabels) return { labels: d.barLabels, values: d.barValues, unit: d.barUnit || '' };
+  if (d.barData)   return { labels: d.barData.labels, values: d.barData.deep.map((v,i)=>+(v+d.barData.rem[i]).toFixed(3)), unit: 'h' };
+  return { labels: [], values: [], unit: '' };
+}
+
+function buildChartConfig(d, chartType) {
+  const { labels, values, unit } = extractLabelsValues(d);
+  const bgColors = labels.map((_, i) => CHART_PALETTE[i % CHART_PALETTE.length]);
+  const darkScaleOpts = {
+    x: { grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'rgba(255,255,255,0.45)',font:{size:9}} },
+    y: { grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'rgba(255,255,255,0.5)',font:{size:10}} }
+  };
+
+  if (chartType === 'line') {
+    return {
+      type: 'line',
+      data: { labels, datasets: [{ label: unit, data: values, borderColor:'#82C1CF', backgroundColor:'rgba(130,193,207,0.1)', fill:true, tension:0.4, pointBackgroundColor:'#82C1CF', pointRadius:4, borderWidth:2 }] },
+      options: { responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.raw+' '+unit}} },
+        scales: darkScaleOpts }
+    };
+  }
+  if (chartType === 'bar') {
+    // For bar-sleep, show grouped bars
+    if (d.type === 'bar-sleep') {
+      return {
+        type: 'bar',
+        data: { labels: d.barData.labels, datasets: [
           { label:'Deep Sleep (h)', data:d.barData.deep, backgroundColor:'rgba(130,193,207,0.75)', borderRadius:4 },
           { label:'REM Sleep (h)', data:d.barData.rem, backgroundColor:'rgba(95,168,184,0.45)', borderRadius:4 }
         ]},
-        options:{ responsive:true, maintainAspectRatio:false, scales:{
-          x:{stacked:true, grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'rgba(255,255,255,0.45)',font:{size:9}}},
-          y:{stacked:true, grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'rgba(255,255,255,0.5)',font:{size:9},callback:v=>v.toFixed(3)+' h'}}
-        }, plugins:{ legend:{labels:{color:'rgba(255,255,255,0.5)',font:{size:10}}}, tooltip:{callbacks:{label:c=>c.raw.toFixed(3)+' h'}} }}
-      });
-      activeCharts[canvasId] = chart;
-    });
-  } else if (d.type === 'table') {
-    const rows = d.tableData.map(r=>`<tr style="border-bottom:1px solid rgba(255,255,255,0.06)">
-      <td style="padding:6px 8px;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.5)">${r.id}</td>
-      <td style="padding:6px 8px;font-size:11px;font-weight:700;color:var(--teal)">${r.steps}</td>
-      <td style="padding:6px 8px;font-size:10px;color:rgba(255,255,255,0.4)">${r.group}</td>
-      <td style="padding:6px 8px;font-size:13px">${r.flag}</td>
-    </tr>`).join('');
-    body.innerHTML = `<table style="width:100%;border-collapse:collapse">
-      <thead><tr style="border-bottom:1px solid rgba(130,193,207,0.2)">
-        <th style="padding:6px 8px;font-size:10px;color:var(--teal);text-align:left;font-weight:700">Device ID</th>
-        <th style="padding:6px 8px;font-size:10px;color:var(--teal);text-align:left;font-weight:700">Steps (7d)</th>
-        <th style="padding:6px 8px;font-size:10px;color:var(--teal);text-align:left;font-weight:700">Group</th>
-        <th style="padding:6px 8px;font-size:10px;color:var(--teal);text-align:left;font-weight:700">Flag</th>
-      </tr></thead><tbody>${rows}</tbody>
-    </table>
-    <div class="chart-summary" style="margin-top:8px">${d.summary}</div>`;
+        options: { responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{labels:{color:'rgba(255,255,255,0.5)',font:{size:10}}} },
+          scales: darkScaleOpts }
+      };
+    }
+    return {
+      type: 'bar',
+      data: { labels, datasets:[{ data:values, backgroundColor: bgColors, borderRadius:6, borderWidth:0 }] },
+      options: { responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.raw+' '+unit}} },
+        scales: darkScaleOpts }
+    };
   }
+  if (chartType === 'pie' || chartType === 'doughnut') {
+    return {
+      type: chartType,
+      data: { labels, datasets:[{ data:values, backgroundColor:bgColors, borderColor:'rgba(0,0,0,0.2)', borderWidth:2, hoverOffset:8 }] },
+      options: { responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ position:'right', labels:{color:'rgba(255,255,255,0.65)',font:{size:10},padding:12,usePointStyle:true} },
+          tooltip:{callbacks:{label:c=>' '+c.raw+' '+unit+' ('+Math.round(c.raw/values.reduce((a,b)=>a+b,0)*100)+'%)'}} } }
+    };
+  }
+  if (chartType === 'bar-sleep') {
+    return {
+      type: 'bar',
+      data: { labels: d.barData.labels, datasets:[
+        { label:'Deep Sleep (h)', data:d.barData.deep, backgroundColor:'rgba(130,193,207,0.75)', borderRadius:4 },
+        { label:'REM Sleep (h)', data:d.barData.rem, backgroundColor:'rgba(95,168,184,0.45)', borderRadius:4 }
+      ]},
+      options: { responsive:true, maintainAspectRatio:false, scales:{
+        x:{stacked:true, ...darkScaleOpts.x}, y:{stacked:true, ...darkScaleOpts.y, ticks:{...darkScaleOpts.y.ticks, callback:v=>v.toFixed(3)+' h'}}
+      }, plugins:{ legend:{labels:{color:'rgba(255,255,255,0.5)',font:{size:10}}}, tooltip:{callbacks:{label:c=>c.raw.toFixed(3)+' h'}} }}
+    };
+  }
+  return null;
+}
+
+function renderChartInWrap(wrap, d, chartType) {
+  // Destroy any existing chart
+  const oldCanvas = wrap.querySelector('canvas');
+  if (oldCanvas && activeCharts[oldCanvas.id]) {
+    activeCharts[oldCanvas.id].destroy();
+    delete activeCharts[oldCanvas.id];
+  }
+  const newId = 'chart-' + Date.now();
+  wrap.innerHTML = '<canvas id="' + newId + '"></canvas>';
+  requestAnimationFrame(() => {
+    const ctx = document.getElementById(newId);
+    if (!ctx) return;
+    const config = buildChartConfig(d, chartType);
+    if (!config) return;
+    activeCharts[newId] = new Chart(ctx, config);
+  });
+}
+
+function addChartToggle(body, d, currentType) {
+  const available = getAvailableChartTypes(d.type);
+  if (available.length <= 1) return;
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;gap:6px;margin-top:9px;flex-wrap:wrap;padding-top:8px;border-top:1px solid rgba(255,255,255,0.07)';
+  const lbl = document.createElement('span');
+  lbl.style.cssText = 'font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;margin-right:2px';
+  lbl.textContent = 'View as:';
+  row.appendChild(lbl);
+  let activeCt = currentType;
+  available.forEach(type => {
+    const btn = document.createElement('button');
+    const isActive = type === activeCt;
+    btn.style.cssText = 'padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .15s;border:1.5px solid '+(isActive?'rgba(130,193,207,0.6)':'rgba(130,193,207,0.2)')+';background:'+(isActive?'rgba(130,193,207,0.2)':'rgba(255,255,255,0.04)')+';color:'+(isActive?'#82C1CF':'rgba(255,255,255,0.38)');
+    btn.textContent = CHART_TYPE_LABELS[type] || type;
+    btn.dataset.ctype = type;
+    btn.onclick = () => {
+      activeCt = type;
+      row.querySelectorAll('button').forEach(b => {
+        const on = b.dataset.ctype === type;
+        b.style.borderColor = on ? 'rgba(130,193,207,0.6)' : 'rgba(130,193,207,0.2)';
+        b.style.background   = on ? 'rgba(130,193,207,0.2)' : 'rgba(255,255,255,0.04)';
+        b.style.color        = on ? '#82C1CF' : 'rgba(255,255,255,0.38)';
+      });
+      const wrap = body.querySelector('.chart-wrap');
+      if (wrap) renderChartInWrap(wrap, d, type);
+    };
+    row.appendChild(btn);
+  });
+  body.appendChild(row);
+}
+
+function renderResult(d, body) {
+  if (d.type === 'metric') {
+    body.innerHTML = '<div class="metric-card"><div><div class="metric-value">'+d.result.value+' <span class="metric-unit">'+d.result.unit+'</span></div><div class="metric-label">'+d.result.label+'</div><div class="metric-range">'+d.result.range+'</div></div></div>';
+    return;
+  }
+  if (d.type === 'table') {
+    const rows = d.tableData.map(r=>'<tr style="border-bottom:1px solid rgba(255,255,255,0.06)"><td style="padding:6px 8px;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.5)">'+r.id+'</td><td style="padding:6px 8px;font-size:11px;font-weight:700;color:var(--teal)">'+r.steps+'</td><td style="padding:6px 8px;font-size:10px;color:rgba(255,255,255,0.4)">'+r.group+'</td><td style="padding:6px 8px;font-size:13px">'+r.flag+'</td></tr>').join('');
+    body.innerHTML = '<table style="width:100%;border-collapse:collapse"><thead><tr style="border-bottom:1px solid rgba(130,193,207,0.2)"><th style="padding:6px 8px;font-size:10px;color:var(--teal);text-align:left;font-weight:700">Device ID</th><th style="padding:6px 8px;font-size:10px;color:var(--teal);text-align:left;font-weight:700">Steps (7d)</th><th style="padding:6px 8px;font-size:10px;color:var(--teal);text-align:left;font-weight:700">Group</th><th style="padding:6px 8px;font-size:10px;color:var(--teal);text-align:left;font-weight:700">Flag</th></tr></thead><tbody>'+rows+'</tbody></table><div class="chart-summary" style="margin-top:8px">'+d.summary+'</div>';
+    return;
+  }
+  // Chart types: line, bar, bar-sleep
+  const wrap = document.createElement('div');
+  wrap.className = 'chart-wrap';
+  const summary = document.createElement('div');
+  summary.className = 'chart-summary';
+  summary.innerHTML = d.summary || '';
+  body.appendChild(wrap);
+  body.appendChild(summary);
+  renderChartInWrap(wrap, d, d.type);
+  setTimeout(() => addChartToggle(body, d, d.type), 200);
 }
 
 function toggleReasoning(id) {
