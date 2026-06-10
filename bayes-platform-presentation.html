@@ -702,6 +702,7 @@
             <button class="example-btn" onclick="triggerDemo(8)">💡 "Show the distribution of HRV values across the cohort."</button>
             <button class="example-btn" onclick="triggerDemo(9)">💡 "How does respiratory rate compare between patient groups?"</button>
             <button class="example-btn" onclick="triggerDemo(10)">💡 "What was the average daily exercise time recorded this week?"</button>
+            <button class="example-btn" onclick="triggerDemo(11)">💡 "Compare average step counts between weekdays and weekends for the past month."</button>
           </div>
           <div class="live-input-row">
             <input class="live-input" id="live-input" type="text" placeholder="Type a question in plain language…">
@@ -1058,6 +1059,18 @@ const DEMOS = [
       range: 'Total tracked: 9.83 min/week · Note: reflects wearable-detected exercise bouts only — not total physical activity'
     },
     reasoning: "The agent summed exercise_time_min per device per day, then computed the cohort mean. The low value reflects the wearable's detection threshold — only structured exercise bouts above a minimum intensity are counted, not general movement."
+  },
+  {
+    question: "Compare average step counts between weekdays and weekends for the past month.",
+    intent: "You're asking to compare mean daily step counts, split by day type (weekday vs. weekend), across the full cohort over the last 30 days.",
+    controlled: `metric: step_count\nsource: wearables_cohort\ntime_range: last 30 days\naggregation: mean(steps) grouped by day_type\nday_type: weekday [Mon–Fri] · weekend [Sat–Sun]`,
+    query: `from(bucket: "wearables")\n  |> range(start: -30d)\n  |> filter(fn: (r) => r._field == "step_count")\n  |> aggregateWindow(every: 1d, fn: sum)\n  |> map(fn: (r) => ({\n       r with day_type: if weekday(r._time) then "weekday" else "weekend"\n     }))\n  |> group(columns: ["day_type"])\n  |> mean()`,
+    type: 'bar',
+    barLabels: ['Weekdays (Mon–Fri)', 'Weekends (Sat–Sun)'],
+    barValues: [8240, 6910],
+    barUnit: 'steps/day',
+    summary: "Over the past 30 days, participants averaged <strong>8,240 steps</strong> on weekdays vs. <strong>6,910 steps</strong> on weekends — a <strong>16% difference</strong>. Weekday activity is consistently higher, likely driven by commuting and structured work routines.",
+    reasoning: "Step counts were summed per device per day, then classified by day_type (weekday = Mon–Fri, weekend = Sat–Sun) using InfluxDB's weekday() function. Cohort mean was computed for each group over the 30-day window. The 16% gap (1,330 steps/day) is clinically meaningful — equivalent to ~10–13 min of brisk walking."
   }
 ];
 
